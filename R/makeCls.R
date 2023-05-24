@@ -1,8 +1,8 @@
 #' Creates a cls file using a vector of conditions, to be used in GSEA
 #'
-#' @param cond: column of the conditions to be compared of the targets file
-#' @param resultsDir: output directory. Default = working directory
-#' @param fileName: name of the output file, without extension
+#' @param cond column of the conditions to be compared of the targets file
+#' @param resultsDir output directory. Default = working directory
+#' @param fileName name of the output file, without extension
 #'
 #' @return cls file with the specific structure in specified path
 #' @export makeCls

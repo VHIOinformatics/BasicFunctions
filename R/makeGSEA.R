@@ -198,11 +198,11 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 
 #' Generates a dotplot of GSEA results joining all conditions when there are less than 100 results, and an equivalent heatmap in Excel format for all cases 
 #' 
-#' @param gsea: GSEA results object
-#' @param contrast: List of vectors with each contrast to use
-#' @param p.adj: Adjusted p-value threshold. Default=0.05
-#' @param collectionName: Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default: ""
-#' @param resultsDir: Output directory where results will be stored. Default: current working directory
+#' @param gsea GSEA results object
+#' @param contrast List of vectors with each contrast to use
+#' @param p.adj Adjusted p-value threshold. Default = 0.05
+#' @param collectionName Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""
+#' @param resultsDir Output directory where results will be stored. Default = current working directory
 
 #' 
 #' @import ggplot2

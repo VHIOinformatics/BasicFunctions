@@ -1,8 +1,8 @@
 #' Creates a gct file from a matrix, to be used in GSEA
 #'
-#' @param exprMat: expression matrix, where rows are identifiers and columns samples
-#' @param resultsDir: Output directory. Default = working directory
-#' @param fileName: name of the output file, without extension.
+#' @param exprMat expression matrix, where rows are identifiers and columns samples
+#' @param resultsDir Output directory. Default = working directory
+#' @param fileName name of the output file, without extension.
 #'
 #' @return gct file with the specific structure in specified path
 #' @export gctMake

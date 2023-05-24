@@ -224,15 +224,15 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
 
 #' Creates an excel file out of a resultsRNAseq file 
 #'
-#' @param pathRDS: path to RDS file with a data.frame obtained from resultsRNAseq() object
-#' @param fileRDS: RDS file with a data.frame obtained from resultsRNAseq() object, without extension
-#' @param contrast: List of vectors with each contrast to use
-#' @param resultsDir: Output directory
-#' @param fileName: Name of the output file, without extension
-#' @param pvalue: p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default
-#' @param padj: adjusted p-value threshold. Default = 0.05
-#' @param logFC: abs(logFC) threshold. Default = 1
-#' @param add.colors: colors to add if there are more than 20 contrasts. Default = NULL
+#' @param pathRDS path to RDS file with a data.frame obtained from resultsRNAseq() object
+#' @param fileRDS RDS file with a data.frame obtained from resultsRNAseq() object, without extension
+#' @param contrast List of vectors with each contrast to use
+#' @param resultsDir Output directory
+#' @param fileName Name of the output file, without extension
+#' @param pvalue p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default
+#' @param padj adjusted p-value threshold. Default = 0.05
+#' @param logFC abs(logFC) threshold. Default = 1
+#' @param add.colors colors to add if there are more than 20 contrasts. Default = NULL
 #'
 #' @import openxlsx
 #' @import wrapr

@@ -1,9 +1,9 @@
 #' Creates rnk file using p-values and logFC for sign, to be used in GSEA
 #'
-#' @param res: data frame with columns: Symbol, P.Value and logFC
-#' @param colNames: Vector with the name of the columns with "Symbol", "P.Value" and "logFC"
-#' @param resultsDir: Output directory. Default = working directory
-#' @param fileName: name of the output file, without extension.
+#' @param res data frame with columns: Symbol, P.Value and logFC
+#' @param colNames Vector with the name of the columns with "Symbol", "P.Value" and "logFC"
+#' @param resultsDir Output directory. Default = working directory
+#' @param fileName name of the output file, without extension.
 #'
 #' @return ranked file with the specific structure in specified path
 #' @export makeRnk
