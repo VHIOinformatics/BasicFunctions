@@ -8,6 +8,7 @@
 #' @export gctMake
 
 gctMake <-function(exprMat, resultsDir=getwd(), fileName){
+  
   rows <- nrow(exprMat)
   cols <- ncol(exprMat)
   

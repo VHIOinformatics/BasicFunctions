@@ -6,7 +6,7 @@
 #' 
 #' @return Normalized table of counts
 #' @import edgeR
-#' @export
+#' @export normTMM
 
 
 normTMM <- function(countsTable, log = FALSE, ...){

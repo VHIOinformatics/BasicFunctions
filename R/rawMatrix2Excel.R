@@ -11,7 +11,7 @@
 
 
 rawMatrix2Excel <- function(counts, resultsDir=getwd(), fileName="rawMatrix") {
-  #require(openxlsx)
+  
   wb <- createWorkbook()
   addWorksheet(wb, sheetName = "RawCounts")
   

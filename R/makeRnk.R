@@ -6,7 +6,7 @@
 #' @param fileName: name of the output file, without extension.
 #'
 #' @return ranked file with the specific structure in specified path
-#' @export rnkMake
+#' @export makeRnk
 
 makeRnk <- function(res, colNames, resultsDir=getwd(), fileName) {
  #add param with contrast to obtain directly from res object
