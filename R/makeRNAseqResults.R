@@ -1,34 +1,38 @@
-#' Creates results of RNAseq analysis, including GO annotations 
+#' Obtain results of RNAseq analysis
 #' 
-#' @param exprMat Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid
-#' @param annotMat Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions
-#' @param cond Vector with sample conditions used in the contrasts, same order as colnames(exprMat)
+#' Creates results of differential expression RNAseq analysis, which may including GO annotations and an excel with the total and per comparison results 
+#' 
+#' @param exprMat Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid.
+#' @param annotMat Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions.
+#' @param cond Vector with sample conditions used in the contrasts, same order as colnames(exprMat).
 #' @param fitMain Object obtained after contrasts.fit() function from limma package is applied. Default = fit.main
-#' @param contrast List of vectors with each contrast to use
-#' @param species species used to retrieve annotations (human or mouse). Default = "human"
-#' @param GO Annotation with GO. Default = TRUE
-#' @param geneidCol Column of annotMat that contains gene identifier
+#' @param contrast List of vectors with each contrast to use.
+#' @param species Species used to retrieve annotations (human or mouse). Default = "human"
+#' @param GO Add annotation with GO. Default = TRUE
+#' @param geneidCol Column of annotMat that contains gene identifier. Default = "Geneid"
 #' @param idType type of gene identifier in column geneidCol. Possible values are "SYMBOL" or "ENSEMBL". Default = "SYMBOL"
-#' @param resultsDir Output directory where results will be stored.
+#' @param resultsDir Output directory where results will be stored. Default = current working directory
 #' @param resAnnotFilename Filename of the csv and rds files that will be saved, without the extension. Default = "resultsAnnot"
 #' @param Excel Create an excel of the results. Default = TRUE
 #' @param excelFilename Name of the excel file, without the extension
 #' @param pvalue p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default
-#' @param padj: adjusted p-value threshold. Default = 0.05
-#' @param logFC: abs(logFC) threshold. Default = 1
-#' @param add.colors: colors to add if there are more than 20 contrasts. Default = NULL
+#' @param padj Adjusted p-value threshold. Default = 0.05
+#' @param logFC Abs(logFC) threshold. Default = 1
+#' @param add.colors Colors to add if there are more than 20 contrasts. Default = NULL
 #'
 #' @import gtools
 #' @import GO.db
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
+#' @import AnnotationDbi
+#' @seealso [makeExcelResults(), getAnnot(), makeAnnot()]
 #' 
-#' @returns Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir, as well as an excel
+#' @returns Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir. By default, results are also saved in Excel format.
 #' 
 #' @export RNAseq.resAnnot 
 
 
-RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contrast, species="human", GO=TRUE, geneidCol = "Geneid", idType="SYMBOL", resultsDir, resAnnotFilename="resultsAnnot", Excel=TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL) {
+RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contrast, species="human", GO=TRUE, geneidCol = "Geneid", idType="SYMBOL", resultsDir=getwd(), resAnnotFilename="resultsAnnot", Excel=TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL) {
   
   #Obtain contrasts with limma
   ConList <- vector("list", length(contrast)) 
@@ -86,15 +90,15 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
       ann.database <- org.Mm.eg.db
     }
     
-    GENENAME <- select(ann.database, keys = annotMat.s[,geneidCol], columns = c("GENENAME"), keytype = idType)
-    GO <- select(ann.database, keys = annotMat.s[, geneidCol], columns = c("GO"), keytype = idType)
-    PATH <- select(ann.database, keys=annotMat.s[,geneidCol], columns=c("PATH"), keytype = idType)
+    GENENAME <- AnnotationDbi::select(ann.database, keys = annotMat.s[,geneidCol], columns = c("GENENAME"), keytype = idType)
+    GO <- AnnotationDbi::select(ann.database, keys = annotMat.s[, geneidCol], columns = c("GO"), keytype = idType)
+    PATH <- AnnotationDbi::select(ann.database, keys=annotMat.s[,geneidCol], columns=c("PATH"), keytype = idType)
     
     GENENAME.agg <-aggregate(GENENAME, by=list(GENENAME[,idType]), FUN=function(x) paste(x, collapse="//"))
     GENENAME.agg <- GENENAME.agg[, c("Group.1", "GENENAME")]
     GENENAME.agg.s <- GENENAME.agg[order(GENENAME.agg$Group.1),]
     
-    GO.Term <- select(GO.db, keys=GO$GO, columns=c("TERM"), keytype="GOID")
+    GO.Term <- AnnotationDbi::select(GO.db, keys=GO$GO, columns=c("TERM"), keytype="GOID")
     GO.annot <- cbind(GO, GO.Term)
     
     GO.BP <- vector(mode="character", length=nrow(GO.annot))
@@ -204,7 +208,7 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
     }
   }
   
-    write.csv2(res.annot,file = file.path(resultsDir,csv.file), row.names = FALSE)
+  write.csv2(res.annot,file = file.path(resultsDir,csv.file), row.names = FALSE)
   saveRDS(res.annot, file = file.path(resultsDir, rds.file))
   
   message(paste("Table of results was saved at:",resultsDir))
@@ -222,9 +226,11 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
 }
 
 
-#' Creates an excel file out of a resultsRNAseq file 
+#' Create RNAseq results in Excel
+#' 
+#' Creates an excel file out of a ResultsRNAseq file 
 #'
-#' @param pathRDS path to RDS file with a data.frame obtained from resultsRNAseq() object
+#' @param pathRDS path to RDS file with a data.frame obtained from `RNAseq.resAnnot()` object
 #' @param fileRDS RDS file with a data.frame obtained from resultsRNAseq() object, without extension
 #' @param contrast List of vectors with each contrast to use
 #' @param resultsDir Output directory
@@ -236,7 +242,8 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
 #'
 #' @import openxlsx
 #' @import wrapr
-
+#' @seealso [RNAseq.resAnnot()] 
+#'
 #' @return Excel file in resultsDir with fileName
 #' @export makeExcelResults
 
@@ -516,6 +523,7 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
                          style = c("blue","white", "red"),
                          type = "colorScale"
   )
+  message("Saving results ...")
   saveWorkbook(wb, file.path(resultsDir,paste(fileName, "xlsx", sep=".")),overwrite = TRUE)
   message("The function was performed successfully")
 }

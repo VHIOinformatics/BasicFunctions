@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeGSEA.R
 \name{makeJoinedDotplot}
 \alias{makeJoinedDotplot}
-\title{Generates a dotplot of GSEA results joining all conditions when there are less than 100 results, and an equivalent heatmap in Excel format for all cases}
+\title{Make GSEA dotplot}
 \usage{
 makeJoinedDotplot(
   gsea,
@@ -13,19 +13,22 @@ makeJoinedDotplot(
 )
 }
 \arguments{
-\item{gsea:}{GSEA results object}
+\item{gsea}{GSEA results object.}
 
-\item{contrast:}{List of vectors with each contrast to use}
+\item{contrast}{List of vectors with each contrast to use}
 
-\item{p.adj:}{Adjusted p-value threshold. Default=0.05}
+\item{p.adj}{Adjusted p-value threshold. Default = 0.05}
 
-\item{collectionName:}{Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default: ""}
+\item{collectionName}{Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""}
 
-\item{resultsDir:}{Output directory where results will be stored. Default: current working directory}
+\item{resultsDir}{Output directory where results will be stored. Default = current working directory}
 }
 \value{
 Saves a dotplot of GSEA significant results in all conditions, as well as an excel with the same information
 }
 \description{
-Generates a dotplot of GSEA results joining all conditions when there are less than 100 results, and an equivalent heatmap in Excel format for all cases
+Generates a dotplot of GSEA results joining all comparisons when there are less than 100 significant genesets results, and an equivalent heatmap in Excel format for all cases
+}
+\seealso{
+[makeGSEA()]
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeRNAseqResults.R
 \name{RNAseq.resAnnot}
 \alias{RNAseq.resAnnot}
-\title{Creates results of RNAseq analysis, including GO annotations}
+\title{Obtain results of RNAseq analysis}
 \usage{
 RNAseq.resAnnot(
   exprMat,
@@ -14,7 +14,7 @@ RNAseq.resAnnot(
   GO = TRUE,
   geneidCol = "Geneid",
   idType = "SYMBOL",
-  resultsDir,
+  resultsDir = getwd(),
   resAnnotFilename = "resultsAnnot",
   Excel = TRUE,
   excelFilename,
@@ -25,25 +25,25 @@ RNAseq.resAnnot(
 )
 }
 \arguments{
-\item{exprMat}{Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid}
+\item{exprMat}{Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid.}
 
-\item{annotMat}{Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions}
+\item{annotMat}{Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions.}
 
-\item{cond}{Vector with sample conditions used in the contrasts, same order as colnames(exprMat)}
+\item{cond}{Vector with sample conditions used in the contrasts, same order as colnames(exprMat).}
 
 \item{fitMain}{Object obtained after contrasts.fit() function from limma package is applied. Default = fit.main}
 
-\item{contrast}{List of vectors with each contrast to use}
+\item{contrast}{List of vectors with each contrast to use.}
 
-\item{species}{species used to retrieve annotations (human or mouse). Default = "human"}
+\item{species}{Species used to retrieve annotations (human or mouse). Default = "human"}
 
-\item{GO}{Annotation with GO. Default = TRUE}
+\item{GO}{Add annotation with GO. Default = TRUE}
 
-\item{geneidCol}{Column of annotMat that contains gene identifier}
+\item{geneidCol}{Column of annotMat that contains gene identifier. Default = "Geneid"}
 
 \item{idType}{type of gene identifier in column geneidCol. Possible values are "SYMBOL" or "ENSEMBL". Default = "SYMBOL"}
 
-\item{resultsDir}{Output directory where results will be stored.}
+\item{resultsDir}{Output directory where results will be stored. Default = current working directory}
 
 \item{resAnnotFilename}{Filename of the csv and rds files that will be saved, without the extension. Default = "resultsAnnot"}
 
@@ -53,15 +53,18 @@ RNAseq.resAnnot(
 
 \item{pvalue}{p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default}
 
-\item{padj:}{adjusted p-value threshold. Default = 0.05}
+\item{padj}{Adjusted p-value threshold. Default = 0.05}
 
-\item{logFC:}{abs(logFC) threshold. Default = 1}
+\item{logFC}{Abs(logFC) threshold. Default = 1}
 
-\item{add.colors:}{colors to add if there are more than 20 contrasts. Default = NULL}
+\item{add.colors}{Colors to add if there are more than 20 contrasts. Default = NULL}
 }
 \value{
-Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir, as well as an excel
+Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir. By default, results are also saved in Excel format.
 }
 \description{
-Creates results of RNAseq analysis, including GO annotations
+Creates results of differential expression RNAseq analysis, which may including GO annotations and an excel with the total and per comparison results
+}
+\seealso{
+[makeExcelResults(), getAnnot(), makeAnnot()]
 }

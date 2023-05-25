@@ -1,12 +1,14 @@
+#' Converts counts matrix to excel format
+#'  
 #' Creates an excel file from a raw count matrix
 #' 
-#' @param counts Count matrix
+#' @param counts Count matrix.
 #' @param resultsDir Directory to save the resulting excel file. Default = working directory
 #' @param fileName Name of the excel, without the extension. Default = "rawMatrix"
 #' 
 #' @import openxlsx
 #' 
-#' @returns Saves excel file of the count matrix provided
+#' @returns Saves excel file of the count matrix provided.
 
 
 

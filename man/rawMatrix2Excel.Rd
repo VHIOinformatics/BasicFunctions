@@ -2,20 +2,24 @@
 % Please edit documentation in R/rawMatrix2Excel.R
 \name{rawMatrix2Excel}
 \alias{rawMatrix2Excel}
-\title{Creates an excel file from a raw count matrix}
+\title{Converts counts matrix to excel format
+ 
+Creates an excel file from a raw count matrix}
 \usage{
 rawMatrix2Excel(counts, resultsDir = getwd(), fileName = "rawMatrix")
 }
 \arguments{
-\item{counts}{Count matrix}
+\item{counts}{Count matrix.}
 
 \item{resultsDir}{Directory to save the resulting excel file. Default = working directory}
 
 \item{fileName}{Name of the excel, without the extension. Default = "rawMatrix"}
 }
 \value{
-Saves excel file of the count matrix provided
+Saves excel file of the count matrix provided.
 }
 \description{
+Converts counts matrix to excel format
+ 
 Creates an excel file from a raw count matrix
 }

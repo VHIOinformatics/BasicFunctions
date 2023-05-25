@@ -2,7 +2,8 @@
 % Please edit documentation in R/makeORA.R
 \name{plotORA}
 \alias{plotORA}
-\title{plot ORA results, internal function}
+\title{Plot ORA results
+Generates plots of ORA results, internal function}
 \usage{
 plotORA(
   enrichment,
@@ -27,5 +28,9 @@ plotORA(
 \item{plotP.adjust}{threshold of the adjusted p-value to be selected for plots. Default = 0.05}
 }
 \description{
-plot ORA results, internal function
+Plot ORA results
+Generates plots of ORA results, internal function
+}
+\seealso{
+[makeORA()]
 }

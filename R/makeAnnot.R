@@ -1,12 +1,14 @@
-#' Creates annotation file for a given genome
+#' Create annotation file
 #' 
-#' @param gtf Path to gtf file that was used for the alignment
-#' @param genome Genome version that was used to create the count matrix. Example: mm10, GRCh38
-#' @param counts Raw count matrix
-#' @param annotDir Output directory where the annotations file will be stored
+#' Creates an annotation file for a given genome, using the gtf
 #' 
-#' @return Saves an RData of the annotation file for the given genome version, at the provided output directory, with name "geneGTF.[genome].Annot.RData"
+#' @param gtf Path to gtf file that was used for the alignment.
+#' @param genome Genome version that was used to create the count matrix. Example: "mm10", "GRCh38"
+#' @param counts Raw count matrix.
+#' @param annotDir Output directory where the annotations file will be stored. The function will create a folder with the genome name inside this folder, and store the result in it.
 #' 
+#' @return Saves an RData of the annotation file for the given genome version, at the provided output directory, with name "geneGTF.[genome].Annot.RData". The file will include all genes in the raw count matrix, to obtain it for only the genes in the filtered matrix, use `getAnnot()`.
+#' @seealso [getAnnot()]
 #' @import stringr
 #' 
 #' @export makeAnnot

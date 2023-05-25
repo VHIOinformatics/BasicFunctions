@@ -1,3 +1,5 @@
+#' Create gct file
+#' 
 #' Creates a gct file from a matrix, to be used in GSEA
 #'
 #' @param exprMat expression matrix, where rows are identifiers and columns samples

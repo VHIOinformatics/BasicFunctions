@@ -123,7 +123,8 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
   
 }
 
-##' plot ORA results, internal function
+##' Plot ORA results
+##' Generates plots of ORA results, internal function
 ##' 
 ##' @param enrichment results of an ORA enrichment performed with function makeORA
 ##' @param plotName the name to be given to that plot
@@ -137,6 +138,7 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
 ##' @import gridExtra
 ##' @import png
 ##' @import ggplot2
+##' @seealso [makeORA()]
 
 ##' @export plotORA
 

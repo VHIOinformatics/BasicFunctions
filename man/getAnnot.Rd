@@ -2,20 +2,23 @@
 % Please edit documentation in R/getAnnot.R
 \name{getAnnot}
 \alias{getAnnot}
-\title{Gets annotation dataframe of a filtered counts matrix for an already created annotation file, that will be dependent on the genome species and version}
+\title{Load annotation table}
 \usage{
 getAnnot(counts, genome, annotDir)
 }
 \arguments{
-\item{counts:}{Filtered count matrix}
+\item{counts}{Filtered count matrix.}
 
-\item{genome:}{Genome that was used to create the count matrix. Example: mm10, GRCh38....}
+\item{genome}{Genome that was used to create the count matrix. Example: "mm10", "GRCh38"....}
 
-\item{annotDir:}{Directory where the annotation files are stored}
+\item{annotDir}{Directory where the annotation files are stored. The function will look for a subfolder with the genome name inside this directory.}
 }
 \value{
-Annotation dataframe of the genes included in the counts matrix
+Annotation dataframe of the genes included in the counts matrix.
 }
 \description{
 Gets annotation dataframe of a filtered counts matrix for an already created annotation file, that will be dependent on the genome species and version
+}
+\seealso{
+[makeAnnot()]
 }

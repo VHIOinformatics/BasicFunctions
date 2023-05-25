@@ -2,16 +2,16 @@
 % Please edit documentation in R/makeGct.R
 \name{gctMake}
 \alias{gctMake}
-\title{Creates a gct file from a matrix, to be used in GSEA}
+\title{Create gct file}
 \usage{
 gctMake(exprMat, resultsDir = getwd(), fileName)
 }
 \arguments{
-\item{exprMat:}{expression matrix, where rows are identifiers and columns samples}
+\item{exprMat}{expression matrix, where rows are identifiers and columns samples}
 
-\item{resultsDir:}{Output directory. Default = working directory}
+\item{resultsDir}{Output directory. Default = working directory}
 
-\item{fileName:}{name of the output file, without extension.}
+\item{fileName}{name of the output file, without extension.}
 }
 \value{
 gct file with the specific structure in specified path

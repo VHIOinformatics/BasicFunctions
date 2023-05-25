@@ -1,8 +1,10 @@
+#' Normalize counts
+#'  
 #' Function to normalize to TMMs a counts table using edgeR package
 #' To be used for visualization, not DEA
 #' 
-#' @param countsTable table of counts, with genes as rows and samples as columns
-#' @param log to be used in function cpm. Default = FALSE
+#' @param countsTable Table of counts, with genes as rows and samples as columns.
+#' @param log Convert to log2 values. To be used in function cpm. Default = FALSE
 #' 
 #' @return Normalized table of counts
 #' @import edgeR

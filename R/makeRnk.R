@@ -1,3 +1,4 @@
+#' Create rnk file
 #' Creates rnk file using p-values and logFC for sign, to be used in GSEA
 #'
 #' @param res data frame with columns: Symbol, P.Value and logFC

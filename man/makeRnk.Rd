@@ -2,22 +2,24 @@
 % Please edit documentation in R/makeRnk.R
 \name{makeRnk}
 \alias{makeRnk}
-\title{Creates rnk file using p-values and logFC for sign, to be used in GSEA}
+\title{Create rnk file
+Creates rnk file using p-values and logFC for sign, to be used in GSEA}
 \usage{
 makeRnk(res, colNames, resultsDir = getwd(), fileName)
 }
 \arguments{
-\item{res:}{data frame with columns: Symbol, P.Value and logFC}
+\item{res}{data frame with columns: Symbol, P.Value and logFC}
 
-\item{colNames:}{Vector with the name of the columns with "Symbol", "P.Value" and "logFC"}
+\item{colNames}{Vector with the name of the columns with "Symbol", "P.Value" and "logFC"}
 
-\item{resultsDir:}{Output directory. Default = working directory}
+\item{resultsDir}{Output directory. Default = working directory}
 
-\item{fileName:}{name of the output file, without extension.}
+\item{fileName}{name of the output file, without extension.}
 }
 \value{
 ranked file with the specific structure in specified path
 }
 \description{
+Create rnk file
 Creates rnk file using p-values and logFC for sign, to be used in GSEA
 }

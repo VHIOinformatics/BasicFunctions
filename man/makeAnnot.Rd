@@ -2,22 +2,25 @@
 % Please edit documentation in R/makeAnnot.R
 \name{makeAnnot}
 \alias{makeAnnot}
-\title{Creates annotation file for a given genome}
+\title{Create annotation file}
 \usage{
 makeAnnot(gtf, genome, counts, annotDir)
 }
 \arguments{
-\item{gtf}{Path to gtf file that was used for the alignment}
+\item{gtf}{Path to gtf file that was used for the alignment.}
 
-\item{genome}{Genome version that was used to create the count matrix. Example: mm10, GRCh38}
+\item{genome}{Genome version that was used to create the count matrix. Example: "mm10", "GRCh38"}
 
-\item{counts}{Raw count matrix}
+\item{counts}{Raw count matrix.}
 
-\item{annotDir}{Output directory where the annotations file will be stored}
+\item{annotDir}{Output directory where the annotations file will be stored. The function will create a folder with the genome name inside this folder, and store the result in it.}
 }
 \value{
-Saves an RData of the annotation file for the given genome version, at the provided output directory, with name "geneGTF.[genome].Annot.RData"
+Saves an RData of the annotation file for the given genome version, at the provided output directory, with name "geneGTF.[genome].Annot.RData". The file will include all genes in the raw count matrix, to obtain it for only the genes in the filtered matrix, use `getAnnot()`.
 }
 \description{
-Creates annotation file for a given genome
+Creates an annotation file for a given genome, using the gtf
+}
+\seealso{
+[getAnnot()]
 }

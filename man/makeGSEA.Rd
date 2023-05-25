@@ -19,29 +19,29 @@ makeGSEA(
 )
 }
 \arguments{
-\item{results}{resultsRNAseq object or a genelist (with names). resultsRNAseq is a data.frame obtained from makeRNAseqResults(). 
-Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for each contrast (eg. "P.Value.LES_ACT.vs.LES_INACT").}
+\item{results}{ResultsRNAseq object or a genelist (with names). resultsRNAseq is a data.frame obtained from `RNAseq.resAnnot()`. 
+Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for each contrast. Example: "P.Value.LES_ACT.vs.LES_INACT"}
 
-\item{contrast}{List with one vector of length 2 for each contrast}
+\item{contrast}{List with one vector of length 2 for each contrast.}
 
-\item{gmt}{Gene sets data.frame as obtained with function clusterProfiler::read.gmt. Must have a column "term" and a column "gene".}
+\item{gmt}{Gene sets data.frame as obtained with function `clusterProfiler::read.gmt`. Must have a column "term" and a column "gene".}
 
-\item{resultsDir}{Character vector with output results directory. Default = working directory.}
+\item{resultsDir}{Character vector with output results directory. Default = working directory}
 
 \item{collectionName}{Vector with the name of the collection. It will be 
-appended to the output directory/files name (eg. "c5.go.bp")}
+appended to the output directory/files name. Example: "c5.go.bp"}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing. Default = 15}
+\item{minGSSize}{Minimal size of each geneSet for analyzing. Default = 15}
 
-\item{maxGSSize}{maximal size of genes annotated for testing. Default = 500}
+\item{maxGSSize}{Maximal size of genes annotated for testing. Default = 500}
 
-\item{p.value}{pvalue cutoff for resultsRNASeq objects. Default = 1, as we want to keep all results}
+\item{plots}{Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE}
 
-\item{plots}{whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE}
-
-\item{p.adj}{threshold of the adjusted p-value to be selected for plots. Default = 0.05}
+\item{p.adj}{Threshold of the adjusted p-value to be selected for plots. Default = 0.05}
 
 \item{plotTop}{Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50}
+
+\item{p.valuep-value}{cCutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results}
 }
 \value{
 Returns a list with enrichment results for each contrast. The list is saved as a RData object 
@@ -49,6 +49,6 @@ in the resultsDir directory, along with a folder for each contrast containing an
 excel file with enrichment results and plots if requested.
 }
 \description{
-Function that performs a GSEA on a resultsRNAseq object (and a list of contrasts) or a genelist
+Function that performs a GSEA on a RNAseq.resAnnot object (and a list of contrasts) or a genelist
 from clusterProfiler package. This function performs an hypergeometric test for each gene set.
 }

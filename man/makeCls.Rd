@@ -2,16 +2,16 @@
 % Please edit documentation in R/makeCls.R
 \name{makeCls}
 \alias{makeCls}
-\title{Creates a cls file using a vector of conditions, to be used in GSEA}
+\title{Create Cls file}
 \usage{
 makeCls(cond, resultsDir = getwd(), fileName)
 }
 \arguments{
-\item{cond:}{column of the conditions to be compared of the targets file}
+\item{cond}{column of the conditions to be compared of the targets file}
 
-\item{resultsDir:}{output directory. Default = working directory}
+\item{resultsDir}{output directory. Default = working directory}
 
-\item{fileName:}{name of the output file, without extension}
+\item{fileName}{name of the output file, without extension}
 }
 \value{
 cls file with the specific structure in specified path

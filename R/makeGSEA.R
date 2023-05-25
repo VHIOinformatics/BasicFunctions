@@ -1,27 +1,27 @@
 ##' Runs Gene set enrichment analysis (GSEA) using package cluterProfiler 
 ##'
-##' Function that performs a GSEA on a resultsRNAseq object (and a list of contrasts) or a genelist
+##' Function that performs a GSEA on a RNAseq.resAnnot object (and a list of contrasts) or a genelist
 ##' from clusterProfiler package. This function performs an hypergeometric test for each gene set.
 
-##' @param results resultsRNAseq object or a genelist (with names). resultsRNAseq is a data.frame obtained from makeRNAseqResults(). 
-##' Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for each contrast (eg. "P.Value.LES_ACT.vs.LES_INACT"). 
-##' @param contrast List with one vector of length 2 for each contrast
-##' @param gmt Gene sets data.frame as obtained with function clusterProfiler::read.gmt. Must have a column "term" and a column "gene".
+##' @param results ResultsRNAseq object or a genelist (with names). resultsRNAseq is a data.frame obtained from `RNAseq.resAnnot()`. 
+##' Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for each contrast. Example: "P.Value.LES_ACT.vs.LES_INACT" 
+##' @param contrast List with one vector of length 2 for each contrast.
+##' @param gmt Gene sets data.frame as obtained with function `clusterProfiler::read.gmt`. Must have a column "term" and a column "gene".
 ##' @param collectionName Vector with the name of the collection. It will be 
-##' appended to the output directory/files name (eg. "c5.go.bp")
-##' @param resultsDir Character vector with output results directory. Default = working directory.
-##' @param minGSSize minimal size of each geneSet for analyzing. Default = 15
-##' @param maxGSSize maximal size of genes annotated for testing. Default = 500
-##' @param p.value  pvalue cutoff for resultsRNASeq objects. Default = 1, as we want to keep all results
-##' @param plots whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE
-##' @param p.adj threshold of the adjusted p-value to be selected for plots. Default = 0.05
+##' appended to the output directory/files name. Example: "c5.go.bp"
+##' @param resultsDir Character vector with output results directory. Default = working directory
+##' @param minGSSize Minimal size of each geneSet for analyzing. Default = 15
+##' @param maxGSSize Maximal size of genes annotated for testing. Default = 500
+##' @param p.valuep-value cCutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results
+##' @param plots Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE
+##' @param p.adj Threshold of the adjusted p-value to be selected for plots. Default = 0.05
 ##' @param plotTop Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50
 
 ##' 
 ##' @return Returns a list with enrichment results for each contrast. The list is saved as a RData object 
 ##' in the resultsDir directory, along with a folder for each contrast containing an 
 ##' excel file with enrichment results and plots if requested.
-##' @export
+##' @export 
 ##' @import clusterProfiler
 ##' @import openxlsx 
 ##' @import enrichplot
@@ -78,7 +78,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
     
     saveWorkbook(wb, file.path(gseaResDir, paste("GSEA",collectionName,contrast[[i]][1],"vs",contrast[[i]][2],"xlsx",sep=".")), overwrite = TRUE)
     
-    message(paste0("Results for contrast ",contrast[[i]][1],".vs.",contrast[[i]][2])," saved succesfully")
+    message(paste0("\nResults for contrast ",contrast[[i]][1],".vs.",contrast[[i]][2])," saved succesfully")
 
   }
   save(gsea,file=file.path(resultsDir, paste0("GSEA",collectionName,".RData")))
@@ -196,9 +196,11 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 
 
 
-#' Generates a dotplot of GSEA results joining all conditions when there are less than 100 results, and an equivalent heatmap in Excel format for all cases 
+#' Make GSEA dotplot
 #' 
-#' @param gsea GSEA results object
+#' Generates a dotplot of GSEA results joining all comparisons when there are less than 100 significant genesets results, and an equivalent heatmap in Excel format for all cases 
+#' 
+#' @param gsea GSEA results object.
 #' @param contrast List of vectors with each contrast to use
 #' @param p.adj Adjusted p-value threshold. Default = 0.05
 #' @param collectionName Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""
@@ -208,6 +210,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 #' @import ggplot2
 #' @import dplyr
 #' @import openxlsx
+#' @seealso [makeGSEA()]
 #' 
 #' @return Saves a dotplot of GSEA significant results in all conditions, as well as an excel with the same information
 #' @export makeJoinedDotplot
@@ -222,7 +225,7 @@ makeJoinedDotplot <- function(gsea,contrast,p.adj=0.05,collectionName="", result
     
     result <- bind_rows(gsea[[i]]@result[gsea[[i]]@result$p.adjust < p.adj,], .id = "analysis")
     
-    if(nrow(results)!=0) { # if there are significant results
+    if(nrow(result)!=0) { # if there are significant results
       # add each result to results list
       result_list[[i]] <- result
       result_list[[i]]$analysis <- paste0(contrast[[i]][1],".vs.",contrast[[i]][2])
