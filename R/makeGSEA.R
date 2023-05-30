@@ -1,4 +1,4 @@
-##' Runs Gene set enrichment analysis (GSEA) using package cluterProfiler 
+##' Runs Gene set enrichment analysis (GSEA) using package clusterProfiler 
 ##'
 ##' Function that performs a GSEA on a RNAseq.resAnnot object (and a list of contrasts) or a genelist
 ##' from clusterProfiler package. This function performs an hypergeometric test for each gene set.
@@ -78,7 +78,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
     
     saveWorkbook(wb, file.path(gseaResDir, paste("GSEA",collectionName,contrast[[i]][1],"vs",contrast[[i]][2],"xlsx",sep=".")), overwrite = TRUE)
     
-    message(paste0("\nResults for contrast ",contrast[[i]][1],".vs.",contrast[[i]][2])," saved succesfully")
+    message(paste0("\n --- Results for contrast ",contrast[[i]][1],".vs.",contrast[[i]][2])," saved succesfully ---")
 
   }
   save(gsea,file=file.path(resultsDir, paste0("GSEA",collectionName,".RData")))
@@ -98,7 +98,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
 makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(), plotTop=50, p.adj=0.05){
   
   for (i in 1:length(contrast)) {
-    message("Plotting ", paste(contrast[[i]][1],"vs",contrast[[i]][2],sep="."),"\n")
+    message("Plotting ", paste(contrast[[i]][1],"vs",contrast[[i]][2],sep="."))
     gseaResDir = file.path(resultsDir,paste("GSEA",collectionName,contrast[[i]][1],"vs",contrast[[i]][2], sep="."))
     dir.create(gseaResDir,showWarnings = F)
     # Create a list with significant [[1]] positive and [[2]] negative results
