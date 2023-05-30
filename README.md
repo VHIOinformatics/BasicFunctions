@@ -31,3 +31,5 @@ install_github("VHIOinformatics/BasicFunctions")
 * **makeGSEA.R**: Includes functions `makeGSEA`, `makePlotsGSEA` and `makeJoinedDotplot`. `makeGSEA` performs the Gene Set Enrichment Analysis from the results object generated with `RNAseq.resAnnot`. It saves an Excel with significative genes in each gene set for each comparison, and calls the `makePlotsGSEA` function to draw the plots (Barplot, Dotplot, RunningScores, Gene-concept networks, Enrichment map). `makePlotsGSEA` additionally calls for `makeJoinedDotplot`, which may also be called independently, to generate a dotplot of all conditions combined (in Excel format and as an image if there are less than 100 significant gene set results).
 
 * **makeORA.R**: Includes functions `makeORA`, which runs the Over Representation Analysis, and `plotORA`, which is called by the `makeORA` function to generate the plots of the results.
+
+For more information on the parameters and usage of the functions, please check the documentation in R. 
