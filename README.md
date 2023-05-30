@@ -3,8 +3,10 @@ Basic functions we use on our projects for bioinformatics data analysis.
 
 ## Installation
 
-``library(devtools)
-install_github("VHIOinformatics/BasicFunctions")``
+```r
+library(devtools)
+install_github("VHIOinformatics/BasicFunctions")
+```
 
 ## Package contents
 
