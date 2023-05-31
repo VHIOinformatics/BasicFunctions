@@ -16,9 +16,9 @@ install_github("VHIOinformatics/BasicFunctions")
 
 * **rawMatrix2Excel.R**: The function `rawMatrix2Excel` converts a count matrix to Excel format, ready to send to investigators who may ask for it.   
 
-* **getAnnot.R**: The function `getAnnot` loads the dataframe of an existing annotation file, specific of the genome version. It will check if a file with the structure "geneGTF.<genome>.Annot.RData" is present at provided directory, and return an annotation table of genes present in the count matrix provided as input (can be filtered or unfiltered).
+* **getAnnot.R**: The function `getAnnot` loads the dataframe of an existing annotation file, specific of the genome version. It will check if a file with the structure "geneGTF.[genome].Annot.RData" is present at provided directory, and return an annotation table of genes present in the count matrix provided as input (can be filtered or unfiltered).
 
-* **makeAnnot.R**: If the annotation file has not been created for an specific genome, the function `makeAnnot` will generate it, and save it in a folder with the genome version name, and with the structure "geneGTF.<genome>.Annot.RData". The input count matrix should be raw (not filtered) to ensure this annotation file can be used in other projects.
+* **makeAnnot.R**: If the annotation file has not been created for an specific genome, the function `makeAnnot` will generate it, and save it in a folder with the genome version name, and with the structure "geneGTF.[genome].Annot.RData". The input count matrix should be raw (not filtered) to ensure this annotation file can be used in other projects.
 
 * **makeRNAseqResults.R**: Script to obtain main results of RNAseq analysis. Includes functions `RNAseq.resAnnot`, which creates a table of differential expression results and saves it in "rds" and "csv" formats, with or without GO annotations, and `makeExcelResults`, which creates an Excel file with the results when called by the `RNaseq.resAnnot` or independently.
 
