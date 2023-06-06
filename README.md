@@ -3,8 +3,10 @@ Basic functions we use on our projects for bioinformatics data analysis.
 
 ## Installation
 
-``library(devtools)
-install_github("VHIOinformatics/BasicFunctions")``
+```r
+library(devtools)
+install_github("VHIOinformatics/BasicFunctions")
+```
 
 ## Package contents
 
@@ -14,9 +16,9 @@ install_github("VHIOinformatics/BasicFunctions")``
 
 * **rawMatrix2Excel.R**: The function `rawMatrix2Excel` converts a count matrix to Excel format, ready to send to investigators who may ask for it.   
 
-* **getAnnot.R**: The function `getAnnot` loads the dataframe of an existing annotation file, specific of the genome version. It will check if a file with the structure "geneGTF.<genome>.Annot.RData" is present at provided directory, and return an annotation table of genes present in the count matrix provided as input (can be filtered or unfiltered).
+* **getAnnot.R**: The function `getAnnot` loads the dataframe of an existing annotation file, specific of the genome version. It will check if a file with the structure "geneGTF.[genome].Annot.RData" is present at provided directory, and return an annotation table of genes present in the count matrix provided as input (can be filtered or unfiltered).
 
-* **makeAnnot.R**: If the annotation file has not been created for an specific genome, the function `makeAnnot` will generate it, and save it in a folder with the genome version name, and with the structure "geneGTF.<genome>.Annot.RData". The input count matrix should be raw (not filtered) to ensure this annotation file can be used in other projects.
+* **makeAnnot.R**: If the annotation file has not been created for an specific genome, the function `makeAnnot` will generate it, and save it in a folder with the genome version name, and with the structure "geneGTF.[genome].Annot.RData". The input count matrix should be raw (not filtered) to ensure this annotation file can be used in other projects.
 
 * **makeRNAseqResults.R**: Script to obtain main results of RNAseq analysis. Includes functions `RNAseq.resAnnot`, which creates a table of differential expression results and saves it in "rds" and "csv" formats, with or without GO annotations, and `makeExcelResults`, which creates an Excel file with the results when called by the `RNaseq.resAnnot` or independently.
 
@@ -29,3 +31,5 @@ install_github("VHIOinformatics/BasicFunctions")``
 * **makeGSEA.R**: Includes functions `makeGSEA`, `makePlotsGSEA` and `makeJoinedDotplot`. `makeGSEA` performs the Gene Set Enrichment Analysis from the results object generated with `RNAseq.resAnnot`. It saves an Excel with significative genes in each gene set for each comparison, and calls the `makePlotsGSEA` function to draw the plots (Barplot, Dotplot, RunningScores, Gene-concept networks, Enrichment map). `makePlotsGSEA` additionally calls for `makeJoinedDotplot`, which may also be called independently, to generate a dotplot of all conditions combined (in Excel format and as an image if there are less than 100 significant gene set results).
 
 * **makeORA.R**: Includes functions `makeORA`, which runs the Over Representation Analysis, and `plotORA`, which is called by the `makeORA` function to generate the plots of the results.
+
+For more information on the parameters and usage of the functions, please check the documentation in R. 
