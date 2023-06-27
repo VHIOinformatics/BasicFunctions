@@ -7,6 +7,7 @@
 #' @param fileName Name of the excel, without the extension. Default = "rawMatrix"
 #' 
 #' @import openxlsx
+#' @export rawMatrix2Excel
 #' 
 #' @returns Saves excel file of the count matrix provided.
 

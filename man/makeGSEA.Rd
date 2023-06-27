@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeGSEA.R
 \name{makeGSEA}
 \alias{makeGSEA}
-\title{Runs Gene set enrichment analysis (GSEA) using package cluterProfiler}
+\title{Runs Gene set enrichment analysis (GSEA) using package clusterProfiler}
 \usage{
 makeGSEA(
   results,
