@@ -374,7 +374,12 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     }
     if ("Geneid" %in% colnames(res)){
       number.col<-which(colnames(res) == "Geneid")
-      setColWidths(wb, sheet = i, cols = number.col, widths = 8)
+      if (grepl("^ENS",res$Geneid[1])) { #if ensembl id make it bigger
+        setColWidths(wb, sheet = i, cols = number.col, widths = 16)
+      } else {
+        setColWidths(wb, sheet = i, cols = number.col, widths = 8)
+      }
+      
     }
     if ("mrna" %in% colnames(res)){
       number.col<-which(colnames(res) == "mrna")
