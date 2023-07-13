@@ -117,7 +117,11 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
         }
       }
     }
-    GO.annot.all <- data.frame(SYMBOL=GO.annot[,idType], GO.BP, GO.CC, GO.MF)
+    if(idType=="SYMBOL") {
+      GO.annot.all <- data.frame(SYMBOL=GO.annot[,idType], GO.BP, GO.CC, GO.MF)
+    } else if (idType=="ENSEMBL") {
+      GO.annot.all <- data.frame(ENSEMBL=GO.annot[,idType], GO.BP, GO.CC, GO.MF)
+    }
     
     symb.vect=unique(GO.annot[,idType])
     GO.BP.p <- vector(mode="character", length=length(symb.vect))
@@ -141,7 +145,11 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
       
     }
     
-    GO.annot.desg <- data.frame(SYMBOL=symb.vect, GO.BP.p, GO.CC.p, GO.MF.p)
+    if(idType=="SYMBOL") {
+      GO.annot.desg <- data.frame(SYMBOL=symb.vect, GO.BP.p, GO.CC.p, GO.MF.p)
+    } else if(idType=="ENSEMBL") {
+      GO.annot.desg <- data.frame(ENSEMBL=symb.vect, GO.BP.p, GO.CC.p, GO.MF.p)
+    }
     GO.annot.agg.s <- GO.annot.desg[order(as.character(GO.annot.desg[,idType])),]
     
     annotMatNEW <- cbind(annotMat.s[,c(1:ncol(annotMat.s))],
