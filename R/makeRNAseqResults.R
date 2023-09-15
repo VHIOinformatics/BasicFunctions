@@ -308,7 +308,12 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     }
     
     logFC.col <- res[,grep(colnames(res),pattern="logFC",fixed = TRUE)]
-    res.final <- res[which(res.filter.p[i] <= p.threshold & abs(logFC.col[i]) > logFC ),]
+    if (length(contrast) == 1) {
+      res.final <- res[which(res.filter.p <= p.threshold & abs(logFC.col) > logFC ),]
+    } else {
+      res.final <- res[which(res.filter.p[i] <= p.threshold & abs(logFC.col[i]) > logFC ),]
+    }
+    
     #order by FC columns
     res.f <- res.final[orderv(res.final[paste("FC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")]),]
     # add new sheet
