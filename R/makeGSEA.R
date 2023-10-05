@@ -12,10 +12,11 @@
 ##' @param resultsDir Character vector with output results directory. Default = working directory
 ##' @param minGSSize Minimal size of each geneSet for analyzing. Default = 15
 ##' @param maxGSSize Maximal size of genes annotated for testing. Default = 500
-##' @param p.valuep-value cCutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results
+##' @param p.value p-value cutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results
 ##' @param plots Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE
 ##' @param p.adj Threshold of the adjusted p-value to be selected for plots. Default = 0.05
 ##' @param plotTop Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50
+##' @param ... Additional parameters
 
 ##' 
 ##' @return Returns a list with enrichment results for each contrast. The list is saved as a RData object 
@@ -31,7 +32,7 @@
 ##' @import dplyr
 
 
-makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName="", minGSSize=15, maxGSSize=500, p.value=1, plots=TRUE, p.adj=0.05, plotTop=50) {
+makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName="", minGSSize=15, maxGSSize=500, p.value=1, plots=TRUE, p.adj=0.05, plotTop=50, ...) {
   
   
   headerStyle1 <- createStyle(halign = "center",valign = "center",textDecoration = "Bold",
