@@ -15,7 +15,8 @@ makeGSEA(
   p.value = 1,
   plots = TRUE,
   p.adj = 0.05,
-  plotTop = 50
+  plotTop = 50,
+  ...
 )
 }
 \arguments{
@@ -35,13 +36,15 @@ appended to the output directory/files name. Example: "c5.go.bp"}
 
 \item{maxGSSize}{Maximal size of genes annotated for testing. Default = 500}
 
+\item{p.value}{p-value cutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results}
+
 \item{plots}{Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE}
 
 \item{p.adj}{Threshold of the adjusted p-value to be selected for plots. Default = 0.05}
 
 \item{plotTop}{Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50}
 
-\item{p.valuep-value}{cCutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results}
+\item{...}{Additional parameters}
 }
 \value{
 Returns a list with enrichment results for each contrast. The list is saved as a RData object 
