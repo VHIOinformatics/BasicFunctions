@@ -37,7 +37,7 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
   #Obtain contrasts with limma
   ConList <- vector("list", length(contrast)) 
   for (i in 1:length(contrast)) {
-    ConList[[i]] <- topTable(fit.main,n=Inf,coef=i, adjust="fdr")[,c("logFC","P.Value","adj.P.Val")]
+    ConList[[i]] <- topTable(fitMain,n=Inf,coef=i, adjust="fdr")[,c("logFC","P.Value","adj.P.Val")]
     ConList[[i]] <- ConList[[i]][order(rownames(ConList[[i]])),]
   }
   
