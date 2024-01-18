@@ -161,7 +161,7 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
     
   } else {
     #Sort annotation matrix
-    annotMatNEW <- annotMat[match(rownames(res_scaled),annotMat$Geneid),]
+    annotMatNEW <- annotMat[match(rownames(res_scaled),annotMat[,geneidCol]),]
   }
   
   #Make sure everything is in same order before merging and returning
