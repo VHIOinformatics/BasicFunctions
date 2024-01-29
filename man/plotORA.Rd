@@ -11,7 +11,8 @@ plotORA(
   collectionName = "",
   resultsDir = getwd(),
   plotTop = 50,
-  plotP.adjust = 0.05
+  plotP.adjust = 0.05,
+  p.adjust = 0.05
 )
 }
 \arguments{

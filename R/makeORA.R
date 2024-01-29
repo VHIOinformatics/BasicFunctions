@@ -142,7 +142,7 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
 
 ##' @export plotORA
 
-plotORA <- function(enrichment, plotName, collectionName = "", resultsDir = getwd(), plotTop = 50, plotP.adjust = 0.05) {
+plotORA <- function(enrichment, plotName, collectionName = "", resultsDir = getwd(), plotTop = 50, plotP.adjust = 0.05, p.adjust=0.05) {
   
   
   enrichment@result = enrichment@result[enrichment@result$p.adjust < p.adjust,]
