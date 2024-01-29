@@ -132,6 +132,8 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
 ##' @param resultsDir Character vector with output results directory
 ##' @param plotTop Number of maximal gene sets to be plotted in barplot and dotplot. Defalult = 50
 ##' @param plotP.adjust threshold of the adjusted p-value to be selected for plots. Default = 0.05
+##' @param p.adjust adjusted pvalue cutoff. Default = 0.05
+##' @param ... 
 
 ##' @import clusterProfiler
 ##' @import enrichplot
@@ -142,7 +144,7 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
 
 ##' @export plotORA
 
-plotORA <- function(enrichment, plotName, collectionName = "", resultsDir = getwd(), plotTop = 50, plotP.adjust = 0.05, p.adjust=0.05) {
+plotORA <- function(enrichment, plotName, collectionName = "", resultsDir = getwd(), plotTop = 50, plotP.adjust = 0.05, p.adjust=0.05, ...) {
   
   
   enrichment@result = enrichment@result[enrichment@result$p.adjust < p.adjust,]

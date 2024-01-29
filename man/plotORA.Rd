@@ -12,7 +12,8 @@ plotORA(
   resultsDir = getwd(),
   plotTop = 50,
   plotP.adjust = 0.05,
-  p.adjust = 0.05
+  p.adjust = 0.05,
+  ...
 )
 }
 \arguments{
@@ -27,6 +28,10 @@ plotORA(
 \item{plotTop}{Number of maximal gene sets to be plotted in barplot and dotplot. Defalult = 50}
 
 \item{plotP.adjust}{threshold of the adjusted p-value to be selected for plots. Default = 0.05}
+
+\item{p.adjust}{adjusted pvalue cutoff. Default = 0.05}
+
+\item{...}{}
 }
 \description{
 Plot ORA results
