@@ -112,6 +112,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
 ##' @param JoinedDotplot Whether to perform the joined dotplot of common terms between all contrasts. Can also be obtained in separate function `makeJoinedDotplot`. Default = TRUE
 ##' @param plotTop Number of maximum plots to perform the running score. Default = 50
 ##' @param p.adj Threshold of the adjusted p-value to be selected for plots. Default = 0.05
+##' @param contrast.order Vector with the order in which the contrasts will be shown in JoinedDotplot
 ##' @param ... Addition parameters
 ##' 
 ##' @return Returns plots for each comparison in each correspondent subfolder at resultsDir 
@@ -122,7 +123,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
 ##' @import png
 
 
-makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(), Barplot=TRUE, Dotplot=TRUE, RunScoreSig=TRUE, GCNetwork=TRUE, EnrichMAP=TRUE, GeneSetRS=NULL, JoinedDotplot=TRUE, plotTop=50, p.adj=0.05, ...){
+makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(), Barplot=TRUE, Dotplot=TRUE, RunScoreSig=TRUE, GCNetwork=TRUE, EnrichMAP=TRUE, GeneSetRS=NULL, JoinedDotplot=TRUE, plotTop=50, p.adj=0.05, contrast.order=contrast.t, ...){
   
   for (i in 1:length(contrast)) {
     message("Plotting ", paste(contrast[[i]][1],"vs",contrast[[i]][2],sep="."))
@@ -251,7 +252,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
   }
   
   if (JoinedDotplot==TRUE) {
-    makeJoinedDotplot(gsea,contrast,p.adj,collectionName,resultsDir)
+    makeJoinedDotplot(gsea,contrast,contrast.order,p.adj,collectionName,resultsDir)
   }
   
   

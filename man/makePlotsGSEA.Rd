@@ -18,6 +18,7 @@ makePlotsGSEA(
   JoinedDotplot = TRUE,
   plotTop = 50,
   p.adj = 0.05,
+  contrast.order = contrast.t,
   ...
 )
 }
@@ -47,6 +48,8 @@ makePlotsGSEA(
 \item{plotTop}{Number of maximum plots to perform the running score. Default = 50}
 
 \item{p.adj}{Threshold of the adjusted p-value to be selected for plots. Default = 0.05}
+
+\item{contrast.order}{Vector with the order in which the contrasts will be shown in JoinedDotplot}
 
 \item{...}{Addition parameters}
 }
