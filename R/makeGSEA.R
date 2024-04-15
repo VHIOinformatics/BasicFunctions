@@ -267,6 +267,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 #' 
 #' @param gsea GSEA results object.
 #' @param contrast List of vectors with each contrast to use
+#' @param contrast.order Order in which the contrasts will be shown in plot. Default = contrast.t
 #' @param p.adj Adjusted p-value threshold. Default = 0.05
 #' @param collectionName Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""
 #' @param resultsDir Output directory where results will be stored. Default = current working directory
@@ -281,7 +282,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 #' @export makeJoinedDotplot
 
 
-makeJoinedDotplot <- function(gsea,contrast,p.adj=0.05,collectionName="", resultsDir=getwd()) {
+makeJoinedDotplot <- function(gsea,contrast,contrast.order=contrast.t,p.adj=0.05,collectionName="", resultsDir=getwd()) {
   
   result_list <- list()
   merged_df <- data.frame()
@@ -311,6 +312,7 @@ makeJoinedDotplot <- function(gsea,contrast,p.adj=0.05,collectionName="", result
   
   # Add results into a single dataframe
   final_result <- bind_rows(result_list)
+  final_result$analysis <- factor(final_result$analysis, levels = contrast.order) # show contrasts in order 
   
   # sort the columns of "heatmap excel" dataframe
   merged_df$Gene.Set.ID <- rownames(merged_df)
