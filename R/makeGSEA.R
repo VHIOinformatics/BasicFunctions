@@ -252,7 +252,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
   }
   
   if (JoinedDotplot==TRUE) {
-    makeJoinedDotplot(gsea,contrast,contrast.order,p.adj,collectionName,resultsDir)
+    makeJoinedDotplot(gsea,contrast,contrast.order=contrast.order,p.adj=p.adj,collectionName=collectionName,resultsDir=resultsDir)
   }
   
   

@@ -6,7 +6,7 @@ Maintainer: Irene Agusti <ireneagusti@vhio.net>
 Description: This package includes different functions used for bioinformatic data analysis
 License: `use_mit_license()`
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
