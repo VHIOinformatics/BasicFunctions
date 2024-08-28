@@ -32,7 +32,7 @@
 ##' @import dplyr
 
 
-makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName="", minGSSize=15, maxGSSize=500, p.value=1, plots=TRUE, p.adj=0.05, plotTop=50, ...) {
+makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName="", minGSSize=15, maxGSSize=500, p.value=1, plots=TRUE, p.adj=0.05, plotTop=50, leadingEdges=FALSE, ...) {
   
   
   headerStyle1 <- createStyle(halign = "center",valign = "center",textDecoration = "Bold",
@@ -88,6 +88,12 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
   if (plots) { 
     message("Drawing GSEA plots...")
     makePlotsGSEA(gsea, contrast = contrast, collectionName = collectionName, resultsDir=resultsDir, plotTop=plotTop, p.adj=p.adj)
+  }
+  
+  if (leadingEdges) {
+    LEDir <- file.path(resultsDir,"leadingEdges")
+    dir.create(LEDir,showWarnings = F)
+    makeLeadingEdges(gsea, contrast=contrast, collectionName=collectionName, gseaDir = LEDir)
   }
   
   return(gsea)

@@ -16,6 +16,7 @@ makeGSEA(
   plots = TRUE,
   p.adj = 0.05,
   plotTop = 50,
+  leadingEdges = FALSE,
   ...
 )
 }

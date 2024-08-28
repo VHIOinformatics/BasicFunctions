@@ -32,4 +32,6 @@ install_github("VHIOinformatics/BasicFunctions")
 
 * **makeORA.R**: Includes functions `makeORA`, which runs the Over Representation Analysis, and `plotORA`, which is called by the `makeORA` function to generate the plots of the results.
 
-For more information on the parameters and usage of the functions, please check the documentation in R. 
+* **makeLeadingEdges.R**: Includes function `makeLeadingEdges`, which creates an excel that gives information on each significant gene in how many and which gene sets it is part of. This function is called in `makeGSEA` with the parameter *leadingEdges=TRUE*.
+
+For more information on the parameters and usage of the functions, please check the documentation in R.
