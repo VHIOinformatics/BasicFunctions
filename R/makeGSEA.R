@@ -16,6 +16,7 @@
 ##' @param plots Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE
 ##' @param p.adj Threshold of the adjusted p-value to be selected for plots. Default = 0.05
 ##' @param plotTop Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50
+##' @param leadingEdges Whether to make an excel including how many and which gene sets a significant gene is part of. Will make a folder "leadingEdges" with the excels per comparison. Default = FALSE
 ##' @param ... Additional parameters
 
 ##' 

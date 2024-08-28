@@ -45,6 +45,8 @@ appended to the output directory/files name. Example: "c5.go.bp"}
 
 \item{plotTop}{Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50}
 
+\item{leadingEdges}{Whether to make an excel including how many and which gene sets a significant gene is part of. Will make a folder "leadingEdges" with the excels per comparison. Default = FALSE}
+
 \item{...}{Additional parameters}
 }
 \value{
