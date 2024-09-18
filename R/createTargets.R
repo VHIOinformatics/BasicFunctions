@@ -25,9 +25,9 @@
 createTargets <- function(names, column_list=NULL,fileName="targets.txt", resultsDir=getwd()){
   
   if (is.null(column_list)) {
-    df <- data.frame("fileName" = names)
+    df <- data.frame("sampleName" = names)
   } else {
-    df <- data.frame("fileName" = names, column_list)
+    df <- data.frame("sampleName" = names, column_list)
   }
   
   if(file.exists(file.path(resultsDir,fileName))) {
