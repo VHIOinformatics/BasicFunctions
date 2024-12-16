@@ -54,7 +54,7 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
           enrichment[[i]] <- clusterProfiler::enricher(results[[i]], TERM2GENE = gmt,    minGSSize = minGSSize, maxGSSize = maxGSSize, pvalueCutoff = 1)
           
           if (plots) {
-            plotORA(enrichment[[i]], plotName = names(results)[i], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = 50, plotP.adjust = plotP.adjust)
+            plotORA(enrichment[[i]], plotName = names(results)[i], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = plotTop, plotP.adjust = plotP.adjust)
           }
           
           names(enrichment)[i] <- names(results)[i]
@@ -94,8 +94,8 @@ makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDi
           
           if (plots) {
             
-            plotORA(enrichment[[i]][[1]], plotName = names(geneList)[1], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = 50, plotP.adjust = 0.05)
-            plotORA(enrichment[[i]][[2]], plotName = names(geneList)[2], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = 50, plotP.adjust = 0.05)
+            plotORA(enrichment[[i]][[1]], plotName = names(geneList)[1], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = plotTop, plotP.adjust = plotP.adjust)
+            plotORA(enrichment[[i]][[2]], plotName = names(geneList)[2], collectionName = collectionName, resultsDir = ORAresultsDir, plotTop = plotTop, plotP.adjust = plotP.adjust)
             
           }
           
@@ -153,10 +153,10 @@ plotORA <- function(enrichment, plotName, collectionName = "", resultsDir = getw
   if (nrow(enrichment@result) > 0) { # If there are significant results; do plots
     
     enrichment@result$Description=strtrim(enrichment@result$Description, 80) # maximum label length
-    p = barplot(enrichment, showCategory=plotTop, font.size = 6, title = paste0("Top ", plotTop, " ", collectionName, " enriched in ", plotName, " , p.adjust < ", p.adjust))
+    p = barplot(enrichment, showCategory=plotTop, font.size = 6, title = paste0("Top ", plotTop, " ", collectionName, " enriched in ", plotName, ", p.adjust < ", p.adjust))
     ggsave(file.path(resultsDir, paste("Enrichment", fullName, "Barplot", "png", sep = ".")), plot = p, width = 9, height = ifelse(nrow(enrichment@result) > 5, 8, 4))
     
-    p = clusterProfiler::dotplot(enrichment, showCategory = plotTop, font.size = 6, title = paste0("Top ", plotTop, " ", collectionName, " enriched in ", plotName, " , p.adjust < ", p.adjust))
+    p = clusterProfiler::dotplot(enrichment, showCategory = plotTop, font.size = 6, title = paste0("Top ", plotTop, " ", collectionName, " enriched in ", plotName, ", p.adjust < ", p.adjust))
     ggsave(file.path(resultsDir, paste("Enrichment", fullName, "Dotplot", "png", sep = ".")), plot = p, width = 9, height = ifelse(nrow(enrichment@result) > 5, 8, 4))
     
     p = clusterProfiler::cnetplot(enrichment, cex.params = list(category_node = 0.7, category_label = 0.7, gene_label = 0.5), layout = "kk", showCategory = 10)
