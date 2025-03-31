@@ -7,7 +7,7 @@
 makeJoinedDotplot(
   gsea,
   contrast,
-  contrast.order = contrast.t,
+  contrast.order,
   p.adj = 0.05,
   collectionName = "",
   resultsDir = getwd()
@@ -18,7 +18,7 @@ makeJoinedDotplot(
 
 \item{contrast}{List of vectors with each contrast to use}
 
-\item{contrast.order}{Order in which the contrasts will be shown in plot. Default = contrast.t}
+\item{contrast.order}{Order in which the contrasts will be shown in plot. If NULL, it will use the order as shown in contrast. Default = NULL}
 
 \item{p.adj}{Adjusted p-value threshold. Default = 0.05}
 

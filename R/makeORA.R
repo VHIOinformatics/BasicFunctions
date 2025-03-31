@@ -1,4 +1,4 @@
-##' Runs over representation analysis using enrichr function of cluterProfiler 
+##' Runs over representation analysis using enrichr function of clusterProfiler 
 ##'
 ##' Function that performs a gene-set enrichment analysis using the function enricher
 ##' on a resultsRNAseq object (and a list of contrasts) or a genelist

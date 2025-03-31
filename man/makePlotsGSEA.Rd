@@ -18,7 +18,7 @@ makePlotsGSEA(
   JoinedDotplot = TRUE,
   plotTop = 50,
   p.adj = 0.05,
-  contrast.order = contrast.t,
+  contrast.order = NULL,
   ...
 )
 }
@@ -49,7 +49,7 @@ makePlotsGSEA(
 
 \item{p.adj}{Threshold of the adjusted p-value to be selected for plots. Default = 0.05}
 
-\item{contrast.order}{Vector with the order in which the contrasts will be shown in JoinedDotplot}
+\item{contrast.order}{Order in which the contrasts will be shown in the JoinedDotplot. If NULL, it will use the order as shown in contrast. Default = NULL}
 
 \item{...}{Addition parameters}
 }

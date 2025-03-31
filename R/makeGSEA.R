@@ -119,7 +119,7 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
 ##' @param JoinedDotplot Whether to perform the joined dotplot of common terms between all contrasts. Can also be obtained in separate function `makeJoinedDotplot`. Default = TRUE
 ##' @param plotTop Number of maximum plots to perform the running score. Default = 50
 ##' @param p.adj Threshold of the adjusted p-value to be selected for plots. Default = 0.05
-##' @param contrast.order Vector with the order in which the contrasts will be shown in JoinedDotplot
+##' @param contrast.order Order in which the contrasts will be shown in the JoinedDotplot. If NULL, it will use the order as shown in contrast. Default = NULL
 ##' @param ... Addition parameters
 ##' 
 ##' @return Returns plots for each comparison in each correspondent subfolder at resultsDir 
@@ -130,7 +130,12 @@ makeGSEA <- function(results, contrast, gmt, resultsDir=getwd(), collectionName=
 ##' @import png
 
 
-makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(), Barplot=TRUE, Dotplot=TRUE, RunScoreSig=TRUE, GCNetwork=TRUE, EnrichMAP=TRUE, GeneSetRS=NULL, JoinedDotplot=TRUE, plotTop=50, p.adj=0.05, contrast.order=contrast.t, ...){
+makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(), Barplot=TRUE, Dotplot=TRUE, RunScoreSig=TRUE, GCNetwork=TRUE, EnrichMAP=TRUE, GeneSetRS=NULL, JoinedDotplot=TRUE, plotTop=50, p.adj=0.05, contrast.order=NULL, ...){
+  
+  contrast.t <- unlist(lapply(contrast, function(x) paste(x, collapse = ".vs.")))
+  if(is.null(contrast.order)) {
+    contrast.order=contrast.t
+  } 
   
   for (i in 1:length(contrast)) {
     message("Plotting ", paste(contrast[[i]][1],"vs",contrast[[i]][2],sep="."))
@@ -258,7 +263,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
     }
   }
   
-  if (JoinedDotplot==TRUE) {
+  if (JoinedDotplot==TRUE & length(contrast) > 1) { # if contrast is 1 makes no sense to do the joined dotplot
     makeJoinedDotplot(gsea,contrast,contrast.order=contrast.order,p.adj=p.adj,collectionName=collectionName,resultsDir=resultsDir)
   }
   
@@ -275,7 +280,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 #' 
 #' @param gsea GSEA results object.
 #' @param contrast List of vectors with each contrast to use
-#' @param contrast.order Order in which the contrasts will be shown in plot. Default = contrast.t
+#' @param contrast.order Order in which the contrasts will be shown in plot. If NULL, it will use the order as shown in contrast. Default = NULL
 #' @param p.adj Adjusted p-value threshold. Default = 0.05
 #' @param collectionName Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""
 #' @param resultsDir Output directory where results will be stored. Default = current working directory
@@ -290,7 +295,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
 #' @export makeJoinedDotplot
 
 
-makeJoinedDotplot <- function(gsea,contrast,contrast.order=contrast.t,p.adj=0.05,collectionName="", resultsDir=getwd()) {
+makeJoinedDotplot <- function(gsea,contrast,contrast.order,p.adj=0.05,collectionName="", resultsDir=getwd()) {
   
   result_list <- list()
   merged_df <- data.frame()
@@ -353,7 +358,7 @@ makeJoinedDotplot <- function(gsea,contrast,contrast.order=contrast.t,p.adj=0.05
             axis.text = element_text(size = charsize, face = 'bold'), 
             axis.text.x = element_text(angle = 45, hjust =1), 
             plot.title = element_text(size = 18, face = 'bold'), 
-            strip.background = element_rect( color="black", fill="black", size=1.5, linetype="solid"), 
+            strip.background = element_rect( color="black", fill="black", linewidth = 1.5, linetype="solid"), 
             strip.text = element_text(color = 'white', face = 'bold', size = 12))
     
     
@@ -386,7 +391,7 @@ makeJoinedDotplot <- function(gsea,contrast,contrast.order=contrast.t,p.adj=0.05
   pvalueLevel3 <- createStyle(fontSize = 12, numFmt = "0.00")
   pvalueLevel4 <- createStyle(fontSize = 14, numFmt = "0.00")
   
-  for(i in 1:contrast.n) {
+  for(i in 1:length(contrast)) {
     threshold_p <- paste0("p.adjust.", contrast.t[i])
     column_idx <- match(threshold_p, names(res))
     column_NES <- paste0("NES.",contrast.t[i])

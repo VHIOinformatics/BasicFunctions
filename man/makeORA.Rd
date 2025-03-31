@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeORA.R
 \name{makeORA}
 \alias{makeORA}
-\title{Runs over representation analysis using enrichr function of cluterProfiler}
+\title{Runs over representation analysis using enrichr function of clusterProfiler}
 \usage{
 makeORA(
   results,
