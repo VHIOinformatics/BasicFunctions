@@ -25,6 +25,7 @@
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
 #' @import AnnotationDbi
+#' @import biomaRt
 #' @seealso [makeExcelResults(), getAnnot(), makeAnnot()]
 #' 
 #' @returns Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir. By default, results are also saved in Excel format.
@@ -32,7 +33,7 @@
 #' @export RNAseq.resAnnot 
 
 
-RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contrast, species="human", GO=TRUE, geneidCol = "Geneid", idType="SYMBOL", resultsDir=getwd(), resAnnotFilename="resultsAnnot", Excel=TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL) {
+RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, contrast, species="human", GO=TRUE, geneidCol = "Geneid", idType="SYMBOL", resultsDir=getwd(), resAnnotFilename="resultsAnnot", Excel=TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL) {
   
   #Obtain contrasts with limma
   ConList <- vector("list", length(contrast)) 
@@ -77,11 +78,31 @@ RNAseq.resAnnot <- function(exprMat, annotMat, cond, fitMain = fit.main, contras
   }
   colnames(topDiff.mat) <- col.topDiff.Names
   
+  if (is.null(annotMat)) { # if we have no annotMat we leave it empty!!
+    
+    emptyAnnot <- data.frame(Geneid=rownames(res_scaled))
+    mart <- biomaRt::useDataset(dataset = "hsapiens_gene_ensembl",         
+                                mart    = useMart("ENSEMBL_MART_ENSEMBL",
+                                host    = "https://www.ensembl.org"))
+    
+    annotTable <- biomaRt::getBM(attributes = c("hgnc_symbol","chromosome_name", "start_position", "end_position", "strand"),       
+                                  filters    = "hgnc_symbol",       
+                                  values     = rownames(res_scaled),         
+                                  mart       = mart)
+    
+    annotTable <- annotTable[annotTable$chromosome_name %in% c(1:22, "X", "Y"),]
+    annotTable_dedup <- annotTable[!duplicated(annotTable$hgnc_symbol), ]
+    annotMat <- merge(emptyAnnot, annotTable_dedup, by.x = "Geneid", by.y="hgnc_symbol", all.x = TRUE)
+    colnames(annotMat) <- c(geneidCol, "Chr", "Start", "End", "Strand")
+    rownames(annotMat) <- annotMat[,geneidCol]
+
+  }
   
   #If GO annotations are requested, call function to annotate
   if(GO) {
     message("Adding GO annotations...")
     annotMat.s <- annotMat[order(annotMat[,geneidCol]),]
+
     #library(KEGG.db)
     #Sort and build matrix with annotations
     if (species =="human") {
