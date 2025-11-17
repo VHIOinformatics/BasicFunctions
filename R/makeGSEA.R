@@ -232,7 +232,13 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
             label_layer <- which(sapply(p$layers, function(x) {
               "GeomTextRepel" %in% class(x$geom) || "GeomLabelRepel" %in% class(x$geom)
             }))
-            p$layers[[label_layer]]$aes_params$size <- 2.5
+            # only modify if it exists (if empty fails)
+            if (length(text_layers) > 0) {
+              for (L in text_layers) {
+                p$layers[[L]]$aes_params$size <- 2.5
+              }
+            }
+            
             ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".EnrichmentMAP.", 
                                                 names(gsea.L)[j], ".png")),plot=p)
           }  
