@@ -227,7 +227,12 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
         if (EnrichMAP==TRUE) {
           if(nrow(gsea.L[[j]]@result)>1){
             pt=enrichplot::pairwise_termsim(gsea.L[[j]], method = "JC", semData = NULL, showCategory = 200)
-            p <- clusterProfiler::emapplot(pt, cex_label_category = 0.5,showCategory = 30)
+            p <- clusterProfiler::emapplot(pt, size_category = 0.5,showCategory = 30)
+            # to reduce the size of labels like before
+            label_layer <- which(sapply(p$layers, function(x) {
+              "GeomTextRepel" %in% class(x$geom) || "GeomLabelRepel" %in% class(x$geom)
+            }))
+            p$layers[[label_layer]]$aes_params$size <- 2.5
             ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".EnrichmentMAP.", 
                                                 names(gsea.L)[j], ".png")),plot=p)
           }  
