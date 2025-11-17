@@ -227,20 +227,25 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
         if (EnrichMAP==TRUE) {
           if(nrow(gsea.L[[j]]@result)>1){
             pt=enrichplot::pairwise_termsim(gsea.L[[j]], method = "JC", semData = NULL, showCategory = 200)
-            p <- clusterProfiler::emapplot(pt, size_category = 0.5,showCategory = 30)
-            # to reduce the size of labels like before
-            label_layer <- which(sapply(p$layers, function(x) {
-              "GeomTextRepel" %in% class(x$geom) || "GeomLabelRepel" %in% class(x$geom)
-            }))
-            # only modify if it exists (if empty fails)
-            if (length(label_layer) > 0) {
-              for (L in label_layer) {
-                p$layers[[L]]$aes_params$size <- 2.5
+            
+            if (nrow(pt@result) > 2) {
+              p <- clusterProfiler::emapplot(pt, size_category = 0.5,showCategory = 30)
+              # to reduce the size of labels like before
+              label_layer <- which(sapply(p$layers, function(x) {
+                "GeomTextRepel" %in% class(x$geom) || "GeomLabelRepel" %in% class(x$geom)
+              }))
+              # only modify if it exists (if empty fails)
+              if (length(label_layer) > 0) {
+                for (L in label_layer) {
+                  p$layers[[L]]$aes_params$size <- 2.5
+                }
               }
+              ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".EnrichmentMAP.", 
+                                                  names(gsea.L)[j], ".png")),plot=p)
+            } else {
+              message("Too few enriched terms for EnrichmentMap plot, skipping...")
             }
             
-            ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".EnrichmentMAP.", 
-                                                names(gsea.L)[j], ".png")),plot=p)
           }  
         }
         
