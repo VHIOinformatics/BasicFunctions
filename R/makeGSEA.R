@@ -233,8 +233,8 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
               "GeomTextRepel" %in% class(x$geom) || "GeomLabelRepel" %in% class(x$geom)
             }))
             # only modify if it exists (if empty fails)
-            if (length(text_layers) > 0) {
-              for (L in text_layers) {
+            if (length(label_layer) > 0) {
+              for (L in label_layer) {
                 p$layers[[L]]$aes_params$size <- 2.5
               }
             }
