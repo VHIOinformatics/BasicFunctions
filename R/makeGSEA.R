@@ -217,7 +217,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
         
         # GSEA Gene-Concept networks (top 5 gene sets by default)
         if (GCNetwork==TRUE) {
-          p=clusterProfiler::cnetplot(gsea.L[[j]], foldChange=gsea.L[[j]]@geneList, cex.params=list(category_node=0.7, category_label=0.7, gene_label=0.5),layout = "kk",showCategory = 5)
+          p=clusterProfiler::cnetplot(gsea.L[[j]], foldChange=gsea.L[[j]]@geneList, cex_category = 0.7, cex_label_category = 0.7, cex_label_gene = 0.5,layout = "kk",showCategory = 5)
           p=p+ scale_color_gradient2(name = "-log(p.val)*signFC", low = "blue", mid = "white", high = "red")
           ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".GeneConceptNetworks.", 
                                               names(gsea.L)[j], ".png")), plot=p)  
@@ -227,7 +227,7 @@ makePlotsGSEA <- function(gsea, contrast, collectionName="", resultsDir=getwd(),
         if (EnrichMAP==TRUE) {
           if(nrow(gsea.L[[j]]@result)>1){
             pt=enrichplot::pairwise_termsim(gsea.L[[j]], method = "JC", semData = NULL, showCategory = 200)
-            p <- clusterProfiler::emapplot(pt,cex.params=list(category_label= 0.5),showCategory = 30)
+            p <- clusterProfiler::emapplot(pt, cex_label_category = 0.5,showCategory = 30)
             ggsave(file.path(gseaResDir, paste0("GSEA.",collectionName,".EnrichmentMAP.", 
                                                 names(gsea.L)[j], ".png")),plot=p)
           }  
