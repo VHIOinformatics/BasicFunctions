@@ -351,10 +351,10 @@ makeJoinedDotplot <- function(gsea,contrast,contrast.order,p.adj=0.05,collection
   # Remove the collection part from the GS name
   prefixes <- sapply(strsplit(final_result$ID, "_"), `[`, 1) # check all collection prefixes
   # remove the prefix only if all genesets are from hallmark, kegg or reactome
-  if (length(unique(prefixes)) == 1 & unique(prefixes) %in% c("HALLMARK", "KEGG", "REACTOME")){
-
-    final_result$ID <- sub("HALLMARK_|KEGG_|REACTOME_","",final_result$ID)
-    
+  if (length(unique(prefixes)) == 1) {
+    if (unique(prefixes) %in% c("HALLMARK", "KEGG", "REACTOME")) {
+          final_result$ID <- sub("HALLMARK_|KEGG_|REACTOME_","",final_result$ID)
+    }
   }
   
   # Limit the number of significative results to make a plot.. and the letter size
