@@ -6,9 +6,9 @@
 \usage{
 RNAseq.resAnnot(
   exprMat,
-  annotMat,
+  annotMat = NULL,
   cond,
-  fitMain = fit.main,
+  fitMain,
   contrast,
   species = "human",
   GO = TRUE,
@@ -21,17 +21,18 @@ RNAseq.resAnnot(
   pvalue = NULL,
   padj = 0.05,
   logFC = 1,
-  add.colors = NULL
+  add.colors = NULL,
+  targets = NULL
 )
 }
 \arguments{
 \item{exprMat}{Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid.}
 
-\item{annotMat}{Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions.}
+\item{annotMat}{Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions. If NULL, will retrieve annotations from Ensembl release 115. Default = NULL}
 
 \item{cond}{Vector with sample conditions used in the contrasts, same order as colnames(exprMat).}
 
-\item{fitMain}{Object obtained after contrasts.fit() function from limma package is applied. Default = fit.main}
+\item{fitMain}{Object obtained after contrasts.fit() function from limma package is applied. Usually fit.main.}
 
 \item{contrast}{List of vectors with each contrast to use.}
 
@@ -58,6 +59,8 @@ RNAseq.resAnnot(
 \item{logFC}{Abs(logFC) threshold. Default = 1}
 
 \item{add.colors}{Colors to add if there are more than 20 contrasts. Default = NULL}
+
+\item{targets}{Dataframe including the metadata annotation of each sample and the variables of interest. If specified, it will be added as an extra sheet in the excel of results. Default = NULL}
 }
 \value{
 Results of RNA-seq analysis. Returns results object, and saves outputs in csv and rds format to resultsDir. By default, results are also saved in Excel format.

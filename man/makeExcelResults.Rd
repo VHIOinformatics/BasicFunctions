@@ -5,11 +5,11 @@
 \title{Create RNAseq results in Excel}
 \usage{
 makeExcelResults(
-  pathRDS,
-  fileRDS,
+  res.annot,
   contrast,
+  targets = NULL,
   resultsDir,
-  fileName,
+  excelFilename,
   pvalue = NULL,
   padj = 0.05,
   logFC = 1,
@@ -17,15 +17,15 @@ makeExcelResults(
 )
 }
 \arguments{
-\item{pathRDS}{path to RDS file with a data.frame obtained from `RNAseq.resAnnot()` object}
-
-\item{fileRDS}{RDS file with a data.frame obtained from resultsRNAseq() object, without extension}
+\item{res.annot}{Dataframe obtained from `RNAseq.resAnnot()` object}
 
 \item{contrast}{List of vectors with each contrast to use}
 
+\item{targets}{Dataframe including the metadata annotation of each sample and the variables of interest. If specified, it will be added as an extra sheet in the excel of results. Default = NULL}
+
 \item{resultsDir}{Output directory}
 
-\item{fileName}{Name of the output file, without extension}
+\item{excelFilename}{Name of the excel output file, without extension}
 
 \item{pvalue}{p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default}
 

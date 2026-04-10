@@ -13,15 +13,20 @@ makeGSEA(
   minGSSize = 15,
   maxGSSize = 500,
   p.value = 1,
-  plots = TRUE,
   p.adj = 0.05,
-  plotTop = 50,
+  rankMethod = "sign",
+  plots = TRUE,
+  plots2Make = c("Barplot", "Dotplot", "RunScoreSig", "GCNetwork", "EnrichMAP"),
+  plotTop = 30,
+  plotTopRS = 50,
+  JoinedDotplot = TRUE,
+  contrast.order = NULL,
   leadingEdges = FALSE,
   ...
 )
 }
 \arguments{
-\item{results}{ResultsRNAseq object or a genelist (with names). resultsRNAseq is a data.frame obtained from `RNAseq.resAnnot()`. 
+\item{results}{ResultsRNAseq object, a data.frame obtained from `RNAseq.resAnnot()`. 
 Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for each contrast. Example: "P.Value.LES_ACT.vs.LES_INACT"}
 
 \item{contrast}{List with one vector of length 2 for each contrast.}
@@ -31,7 +36,7 @@ Must contain a Geneid column and ##' P.Value, adj.P.Val and logFC columns for ea
 \item{resultsDir}{Character vector with output results directory. Default = working directory}
 
 \item{collectionName}{Vector with the name of the collection. It will be 
-appended to the output directory/files name. Example: "c5.go.bp"}
+appended to the output directory/files name. Example: "c5.go.bp". Default = ""}
 
 \item{minGSSize}{Minimal size of each geneSet for analyzing. Default = 15}
 
@@ -39,11 +44,21 @@ appended to the output directory/files name. Example: "c5.go.bp"}
 
 \item{p.value}{p-value cutoff for RNAseq.resAnnot objects. Default = 1, as we want to keep all results}
 
-\item{plots}{Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE}
-
 \item{p.adj}{Threshold of the adjusted p-value to be selected for plots. Default = 0.05}
 
-\item{plotTop}{Number of maximal gene sets to be plotted in barplot and dotplot. Default = 50}
+\item{rankMethod}{By default, the ranking is performed with the log p-value and the sign of fold change ("sign"). However, ranking by both log p-value and logFC is possible when specifying "logFC". Default = "sign"}
+
+\item{plots}{Whether to generate plots (bar plot, dot plot, enrichment map and gene concept networks) in the same directory. Default = TRUE}
+
+\item{plots2Make}{List of plots that will be performed by makeGSEAplots, if plots = TRUE. By default, all of them will be performed. Default =  c("Barplot", "Dotplot", "RunScoreSig", "GCNetwork", "EnrichMAP")}
+
+\item{plotTop}{Number of maximum gene sets to be plotted in barplot and dotplot, and enrichment map. Default = 30}
+
+\item{plotTopRS}{Number of maximum plots to perform the running score. Default = 50}
+
+\item{JoinedDotplot}{Whether to perform a joined dotplot that compares the overlap of the enriched terms between comparisons. Default = TRUE}
+
+\item{contrast.order}{Order in which the contrasts will be shown in the JoinedDotplot. If NULL, it will use the order as shown in contrast. Default = NULL}
 
 \item{leadingEdges}{Whether to make an excel including how many and which gene sets a significant gene is part of. Will make a folder "leadingEdges" with the excels per comparison. Default = FALSE}
 

@@ -3,7 +3,7 @@
 #' Gets annotation dataframe of a filtered counts matrix for an already created annotation file, that will be dependent on the genome species and version
 #' 
 #' @param counts Filtered count matrix.
-#' @param genome Genome that was used to create the count matrix. Example: "mm10", "GRCh38"....
+#' @param genome Genome that was used to create the count matrix. Example: "mm10", "GRCh38"...
 #' @param annotDir Directory where the annotation files are stored. The function will look for a subfolder with the genome name inside this directory.
 #' 
 #' @return Annotation dataframe of the genes included in the counts matrix.

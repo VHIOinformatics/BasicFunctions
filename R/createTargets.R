@@ -30,14 +30,17 @@ createTargets <- function(names, column_list=NULL,fileName="targets.txt", result
     df <- data.frame("sampleName" = names, column_list)
   }
   
-  if(file.exists(file.path(resultsDir,fileName))) {
-    message("Careful! This targets file already exists.")
+  if(file.exists(file.path(resultsDir, fileName))) {
+    warning("Careful! This targets file already exists.")
     overwrite <- readline(prompt="Do you want to overwrite it? (yes/no) ")
-    if (overwrite=="yes") {
+    if (overwrite == "yes" | overwrite == "y") {
       fileName = fileName
-    } else if (overwrite=="no") {
+    } else if (overwrite == "no") {
       newFilename <- readline(prompt="Please, enter a new name for the targets file (including extension): ")
       fileName = newFilename
+    } else {
+      message("Not a valid answer. A new file will be created with today's date.")
+      fileName = paste(Sys.Date(), fileName, sep="_")
     }
     
   }

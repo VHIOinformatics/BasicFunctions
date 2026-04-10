@@ -30,7 +30,7 @@
 ##' @import openxlsx 
 
 
-makeORA <-function(results, contrast = NULL, gmt, collectionName = "", resultsDir = getwd(), minGSSize = 15, maxGSSize = 500, p.value = 0.05, p.adjust = 0.05, logFC=0, plots = TRUE, plotTop = 50, plotP.adjust = 0.05) {
+makeORA <- function(results, contrast = NULL, gmt, collectionName = "", resultsDir = getwd(), minGSSize = 15, maxGSSize = 500, p.value = 0.05, p.adjust = 0.05, logFC = 0, plots = TRUE, plotTop = 50, plotP.adjust = 0.05) {
   
   # If resultsRNAseq and contrasts, will run per contrast and separate UP and DOWN
   require(clusterProfiler)

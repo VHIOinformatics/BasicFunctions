@@ -3,9 +3,9 @@
 #' Creates results of differential expression RNAseq analysis, which may including GO annotations and an excel with the total and per comparison results 
 #' 
 #' @param exprMat Matrix of expression in CPM(E expression provided by voom), TMM or in counts, with rownames = Geneid.
-#' @param annotMat Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions.
+#' @param annotMat Matrix with annotations obtained with `getAnnot` or `makeAnnot` functions. If NULL, will retrieve annotations from Ensembl release 115. Default = NULL
 #' @param cond Vector with sample conditions used in the contrasts, same order as colnames(exprMat).
-#' @param fitMain Object obtained after contrasts.fit() function from limma package is applied. Default = fit.main
+#' @param fitMain Object obtained after contrasts.fit() function from limma package is applied. Usually fit.main.
 #' @param contrast List of vectors with each contrast to use.
 #' @param species Species used to retrieve annotations (human or mouse). Default = "human"
 #' @param GO Add annotation with GO. Default = TRUE
@@ -19,6 +19,7 @@
 #' @param padj Adjusted p-value threshold. Default = 0.05
 #' @param logFC Abs(logFC) threshold. Default = 1
 #' @param add.colors Colors to add if there are more than 20 contrasts. Default = NULL
+#' @param targets Dataframe including the metadata annotation of each sample and the variables of interest. If specified, it will be added as an extra sheet in the excel of results. Default = NULL
 #'
 #' @import gtools
 #' @import GO.db
@@ -33,38 +34,38 @@
 #' @export RNAseq.resAnnot 
 
 
-RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, contrast, species="human", GO=TRUE, geneidCol = "Geneid", idType="SYMBOL", resultsDir=getwd(), resAnnotFilename="resultsAnnot", Excel=TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL) {
+RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain, contrast, species = "human", GO = TRUE, geneidCol = "Geneid", idType = "SYMBOL", resultsDir = getwd(), resAnnotFilename = "resultsAnnot", Excel = TRUE, excelFilename, pvalue = NULL, padj = 0.05, logFC = 1, add.colors = NULL, targets = NULL) {
   
   #Obtain contrasts with limma
   ConList <- vector("list", length(contrast)) 
   for (i in 1:length(contrast)) {
-    ConList[[i]] <- topTable(fitMain,n=Inf,coef=i, adjust="fdr")[,c("logFC","P.Value","adj.P.Val")]
+    ConList[[i]] <- topTable(fitMain, n = Inf, coef = i, adjust = "fdr")[,c("logFC", "P.Value", "adj.P.Val")]
     ConList[[i]] <- ConList[[i]][order(rownames(ConList[[i]])),]
   }
   
   #Scale values from count matrix (normalized or not) for the heatmap
-  res<-exprMat[order(rownames(exprMat)),]
-  res_centered<-res-apply(res,1,mean)
-  res_scaled<-res_centered/apply(res,1,sd)
-  colnames(res_scaled) <- paste(colnames(res_scaled),"scaled",sep=".")
+  res <- exprMat[order(rownames(exprMat)),]
+  res_centered <- res - apply(res, 1, mean)
+  res_scaled <- res_centered/apply(res, 1, sd)
+  colnames(res_scaled) <- paste(colnames(res_scaled), "scaled", sep=".")
   
   #Build matrix with mean expression per condition
   u.cond <- unique(cond)
-  mean.matrix <- t(apply(res,1, function(x) tapply(x,cond,mean)))
+  mean.matrix <- t(apply(res, 1, function(x) tapply(x, cond, mean)))
   mean.matrix <- mean.matrix[,u.cond] #proper order
-  colnames(mean.matrix) <- paste("mean",u.cond, sep=".")
+  colnames(mean.matrix) <- paste("mean", u.cond, sep=".")
   
   #Compute FC using previously computed mean values
   FC.matrix <- matrix(data= NA, nrow=nrow(exprMat), ncol=length(contrast))
   col.FC.Names <- vector()
   for (ic in 1:length(contrast)) {
     FC.matrix[,ic] <- 2^abs(ConList[[ic]]$logFC) * sign(ConList[[ic]]$logFC)
-    col.FC.Names <- c(col.FC.Names, paste("FC",contrast[[ic]][1], "vs", contrast[[ic]][2], sep="."))
+    col.FC.Names <- c(col.FC.Names, paste("FC", contrast[[ic]][1], "vs", contrast[[ic]][2], sep="."))
   }
   colnames(FC.matrix) <- col.FC.Names
   
   #Build topDiff matrix with c("FC", "logFC","P.Value","adj.P.Val")
-  topDiff.mat <- matrix(data= NA, nrow=nrow(exprMat), ncol=length(contrast)*4)
+  topDiff.mat <- matrix(data = NA, nrow = nrow(exprMat), ncol = length(contrast)*4)
   col.topDiff.Names <- vector()
   for (ic in 1:length(contrast)) {
     icc <- 1+(4*(ic-1))
@@ -80,42 +81,74 @@ RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, 
   
   if (is.null(annotMat)) { # if we have no annotMat we leave it empty!!
     
+    warning("An annotation matrix was not provided. We will get the annotations from Ensembl release 115 with biomaRt")
+    getBM_retry <- function(..., retries = 5, wait = 5){ # biomart usually has connections issues so... this will make 5 tries
+      
+      for(i in seq_len(retries)){
+        res <- try(biomaRt::getBM(...), silent = TRUE)
+        
+        if(!inherits(res, "try-error")){
+          return(res)
+        }
+        
+        message("biomaRt query failed, retrying (", i, "/", retries, ")")
+        Sys.sleep(wait)
+      }
+      
+      stop("biomaRt query failed after retries")
+    }
+    
+    # adapt mart to the species of the experiment
+    if (species == "human") {
+      gene_ensembl = "hsapiens_gene_ensembl"
+      gene_symbol = "hgnc_symbol"
+    } else if (species == "mouse") {
+      gene_ensembl = "mmusculus_gene_ensembl"
+      gene_symbol = "mgi_symbol"
+    }
+    
     emptyAnnot <- data.frame(Geneid=rownames(res_scaled))
-    mart <- biomaRt::useDataset(dataset = "hsapiens_gene_ensembl",         
-                                mart    = useMart("ENSEMBL_MART_ENSEMBL",
-                                host    = "https://www.ensembl.org"))
     
-    annotTable <- biomaRt::getBM(attributes = c("hgnc_symbol","chromosome_name", "start_position", "end_position", "strand"),       
-                                  filters    = "hgnc_symbol",       
-                                  values     = rownames(res_scaled),         
-                                  mart       = mart)
+    mart <- biomaRt::useEnsembl(
+      biomart = "genes",
+      dataset = gene_ensembl,
+      version = 115 # latest release 7/4/2026
+    )
     
-    annotTable <- annotTable[annotTable$chromosome_name %in% c(1:22, "X", "Y"),]
-    annotTable_dedup <- annotTable[!duplicated(annotTable$hgnc_symbol), ]
-    annotMat <- merge(emptyAnnot, annotTable_dedup, by.x = "Geneid", by.y="hgnc_symbol", all.x = TRUE)
+    annotTable <- getBM_retry(
+      attributes = c(gene_symbol, "chromosome_name", "start_position", "end_position", "strand"),
+      filters = gene_symbol,
+      values = rownames(res_scaled),
+      mart = mart
+    )
+    
+    
+    annotTable <- annotTable[annotTable$chromosome_name %in% c(1:22, "X", "Y", "MT"),] # selecting only traditional chromosomes
+    annotTable_dedup <- annotTable[!duplicated(annotTable[,gene_symbol]), ] #remove duplicates
+    annotMat <- merge(emptyAnnot, annotTable_dedup, by.x = "Geneid", by.y = gene_symbol, all.x = TRUE) # keep genes even if they don't have the annot
     colnames(annotMat) <- c(geneidCol, "Chr", "Start", "End", "Strand")
     rownames(annotMat) <- annotMat[,geneidCol]
-
+    
   }
   
   #If GO annotations are requested, call function to annotate
-  if(GO) {
+  if (GO) {
     message("Adding GO annotations...")
     annotMat.s <- annotMat[order(annotMat[,geneidCol]),]
-
+    
     #library(KEGG.db)
     #Sort and build matrix with annotations
-    if (species =="human") {
+    if (species == "human") {
       ann.database <- org.Hs.eg.db
-    } else if (species=="mouse") {
+    } else if (species == "mouse") {
       ann.database <- org.Mm.eg.db
     }
     
     GENENAME <- AnnotationDbi::select(ann.database, keys = annotMat.s[,geneidCol], columns = c("GENENAME"), keytype = idType)
     GO <- AnnotationDbi::select(ann.database, keys = annotMat.s[, geneidCol], columns = c("GO"), keytype = idType)
-    PATH <- AnnotationDbi::select(ann.database, keys=annotMat.s[,geneidCol], columns=c("PATH"), keytype = idType)
+    PATH <- AnnotationDbi::select(ann.database, keys = annotMat.s[,geneidCol], columns=c("PATH"), keytype = idType)
     
-    GENENAME.agg <-aggregate(GENENAME, by=list(GENENAME[,idType]), FUN=function(x) paste(x, collapse="//"))
+    GENENAME.agg <- aggregate(GENENAME, by=list(GENENAME[,idType]), FUN=function(x) paste(x, collapse="//"))
     GENENAME.agg <- GENENAME.agg[, c("Group.1", "GENENAME")]
     GENENAME.agg.s <- GENENAME.agg[order(GENENAME.agg$Group.1),]
     
@@ -186,10 +219,10 @@ RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, 
   }
   
   #Make sure everything is in same order before merging and returning
-  a=all.equal(rownames(res_scaled), rownames(res))
-  b=all.equal(rownames(res_scaled), rownames(ConList[[1]]))
-  c=all.equal(rownames(res_scaled), rownames(mean.matrix))
-  d=all.equal(rownames(res_scaled), annotMatNEW$Geneid)
+  a = all.equal(rownames(res_scaled), rownames(res))
+  b = all.equal(rownames(res_scaled), rownames(ConList[[1]]))
+  c = all.equal(rownames(res_scaled), rownames(mean.matrix))
+  d = all.equal(rownames(res_scaled), annotMatNEW$Geneid)
   tryCatch(
     expr = {
       a&b&c&d #If all objects are in same order
@@ -218,34 +251,34 @@ RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, 
   message("Saving results...")
   csv.file = paste0(resAnnotFilename,".csv")
   rds.file = paste0(resAnnotFilename,".rds")
-  if(file.exists(file.path(resultsDir,csv.file)) & file.exists(file.path(resultsDir,rds.file))) {
-    message(paste0("Csv and rds files already exist with the name '",resAnnotFilename,"' at ",resultsDir))
-    overwrite <- readline(prompt="Do you want to overwrite? (yes/no) ")
-    if (overwrite=="yes") {
+  if(file.exists(file.path(resultsDir, csv.file)) & file.exists(file.path(resultsDir, rds.file))) {
+    warning(paste0("Csv and rds files already exist with the name '", resAnnotFilename, "' at ", resultsDir))
+    overwrite <- readline(prompt = "Do you want to overwrite? (yes/no) ")
+    if (overwrite == "yes" | overwrite == "y") {
       csv.file = csv.file
-      csv.file = csv.file
-    } else if (overwrite=="no") {
-      newResAnnotFilename <- readline(prompt="Please, enter a new name that doesn't exist: ")
+      rds.file = rds.file
+    } else if (overwrite == "no") {
+      newResAnnotFilename <- readline(prompt = "Please, enter a new name that doesn't exist: ")
       csv.file = paste0(newResAnnotFilename,".csv")
       rds.file = paste0(newResAnnotFilename,".rds")
       
     } else {
-      message("Answer not valid.")
+      warning("Answer not valid.")
       newResAnnotFilename <- readline(prompt="Please, enter a new name for the results files: ")
       csv.file = paste0(newResAnnotFilename,".csv")
       rds.file = paste0(newResAnnotFilename,".rds")
     }
   }
   
-  write.csv2(res.annot,file = file.path(resultsDir,csv.file), row.names = FALSE)
+  write.csv2(res.annot,file = file.path(resultsDir, csv.file), row.names = FALSE)
   saveRDS(res.annot, file = file.path(resultsDir, rds.file))
   
-  message(paste("Table of results was saved at:",resultsDir))
+  message(paste("Table of results was saved at:", resultsDir))
   
   
-  if(Excel) {
+  if (Excel) {
     message("Creating excel with results...")
-    makeExcelResults(resultsDir, resAnnotFilename, contrast, resultsDir, excelFilename, pvalue, padj, logFC, add.colors)
+    makeExcelResults(res.annot, contrast, targets, resultsDir, excelFilename, pvalue, padj, logFC, add.colors)
   } else {
     message("Excel not created. If you want to create it later, you can use 'makeExcelResults()' function.")
   }
@@ -259,11 +292,11 @@ RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, 
 #' 
 #' Creates an excel file out of a ResultsRNAseq file 
 #'
-#' @param pathRDS path to RDS file with a data.frame obtained from `RNAseq.resAnnot()` object
-#' @param fileRDS RDS file with a data.frame obtained from resultsRNAseq() object, without extension
+#' @param res.annot Dataframe obtained from `RNAseq.resAnnot()` object
 #' @param contrast List of vectors with each contrast to use
+#' @param targets Dataframe including the metadata annotation of each sample and the variables of interest. If specified, it will be added as an extra sheet in the excel of results. Default = NULL
 #' @param resultsDir Output directory
-#' @param fileName Name of the output file, without extension
+#' @param excelFilename Name of the excel output file, without extension
 #' @param pvalue p-value threshold. Default = NULL, as it is assumed to use an adjusted p-value by default
 #' @param padj adjusted p-value threshold. Default = 0.05
 #' @param logFC abs(logFC) threshold. Default = 1
@@ -276,13 +309,12 @@ RNAseq.resAnnot <- function(exprMat, annotMat = NULL, cond, fitMain = fit.main, 
 #' @return Excel file in resultsDir with fileName
 #' @export makeExcelResults
 
-makeExcelResults <- function(pathRDS, fileRDS, contrast,
-                             resultsDir, fileName, pvalue = NULL, 
+makeExcelResults <- function(res.annot, contrast, targets = NULL,
+                             resultsDir, excelFilename, pvalue = NULL, 
                              padj = 0.05, logFC = 1, add.colors = NULL)
 {
   
-  message("Reading RDS file ...")
-  res<-readRDS(file=file.path(pathRDS, paste0(fileRDS, ".rds")))
+  res <- res.annot
   # Change GO columns to eliminate the space at the beginning
   if ("GO.BP" %in% colnames(res)){
     res$GO.BP <- gsub(" ","", res$GO.BP)
@@ -294,7 +326,7 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     res$GO.MF <- gsub(" ","", res$GO.MF)
   }
   #Select heatmap colors columns
-  color.values <- res[,grep(colnames(res),pattern=".scaled",fixed = TRUE)]
+  color.values <- res[,grep(colnames(res), pattern=".scaled", fixed = TRUE)]
   
   ## Create a new workbook
   wb <- createWorkbook()
@@ -310,25 +342,25 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     
     if (is.null(pvalue)) { # pvalue = NULL
       thres.p.type = "adj.P.Val"
-      res.filter.p<-res[,grep(colnames(res),pattern=thres.p.type,fixed = TRUE)]
+      res.filter.p <- res[,grep(colnames(res), pattern = thres.p.type, fixed = TRUE)]
       
       if (!any(res.filter.p < padj)){  # no gene passes the padj threshold, filters by pvalue=0.05
         warning("There are no results lower than the padj threshold. PValue = 0.05 will be used to filter data.") ## IRENE NOTE: may consider asking if they want to increase the padj threshold to 0.1 first?
         p.threshold = 0.05
         thres.p.type = "P.Value"
-        res.filter.p<-res[,grep(colnames(res),pattern=thres.p.type,fixed = TRUE)]
+        res.filter.p <- res[,grep(colnames(res), pattern = thres.p.type, fixed = TRUE)]
       } else { # if there are results passing the padj threshold (res.filter.p < padj)
         p.threshold = padj
-        warning(paste("Padj =",p.threshold,"was used to filter data."))
+        message(paste("Padj =",p.threshold,"was used to filter data."))
       } 
       
     } else { # pvalue != NULL. pvalue will be provided
       p.threshold = pvalue
       thres.p.type = "P.Value"
-      res.filter.p<-res[,grep(colnames(res),pattern=thres.p.type,fixed = TRUE)]  
+      res.filter.p <- res[,grep(colnames(res), pattern = thres.p.type, fixed = TRUE)]  
     }
     
-    logFC.col <- res[,grep(colnames(res),pattern="logFC",fixed = TRUE)]
+    logFC.col <- res[,grep(colnames(res), pattern="logFC", fixed = TRUE)]
     if (length(contrast) == 1) {
       res.final <- res[which(res.filter.p <= p.threshold & abs(logFC.col) > logFC ),]
     } else {
@@ -336,22 +368,25 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     }
     
     #order by FC columns
-    res.f <- res.final[orderv(res.final[paste("FC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")]),]
+    FCcolname <- paste("FC", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    
+    res.f <- res.final[order(res.final[[FCcolname]]), ]
+    
     # add new sheet
-    addWorksheet(wb, sheetName = paste(contrast[[i]][1],"vs",contrast[[i]][2],sep="."))
-    writeData(wb, paste(contrast[[i]][1],"vs",contrast[[i]][2],sep=".") , res.f) 
+    addWorksheet(wb, sheetName = paste(contrast[[i]][1], "vs", contrast[[i]][2], sep="."))
+    writeData(wb, paste(contrast[[i]][1], "vs", contrast[[i]][2],sep="."), res.f) 
     
   }
   
   #### STYLE ####
   message("Style ...")
   
-  sheet.num <- length(contrast)+1
+  sheet.num <- length(contrast) + 1
   # For all sheets 
   for (i in 1:sheet.num){
     # Create several styles for columns and rows
-    headerStyle1 <- createStyle(fontSize = 10,textDecoration = "Bold",
-                                wrapText = TRUE,textRotation = 90,halign = "center")
+    headerStyle1 <- createStyle(fontSize = 10, textDecoration = "Bold",
+                                wrapText = TRUE, textRotation = 90, halign = "center")
     
     addStyle(wb, sheet = i, headerStyle1, rows = 1, cols = 1:length(colnames(res)),
              gridExpand = TRUE)
@@ -368,26 +403,26 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     
     NumberStyle <- createStyle( fontSize = 10, numFmt = "0.00")
     
-    NumberStyle_adj.pval <- createStyle (fontSize = 10, numFmt = "SCIENTIFIC")
+    NumberStyle_adj.pval <- createStyle(fontSize = 10, numFmt = "SCIENTIFIC")
     
     HeatmapStyle <- createStyle(fontSize = 10, numFmt = "0")
-    addStyle(wb,sheet=i, HeatmapStyle, rows = 2:(nrow(res)+1) , cols = 1:(dim(color.values)[2]),gridExpand=T)
+    addStyle(wb, sheet=i, HeatmapStyle, rows = 2:(nrow(res)+1), cols = 1:(dim(color.values)[2]), gridExpand = T)
     number.col <- ncol(res) - dim(color.values)[2]
     FCcols <- grep("FC", colnames(res))
     meanCols <- grep("mean", colnames(res))
     adjPvalCols <- grep("adj.P.Val", colnames(res))
     scaleCols <- grep(".scaled", colnames(res))
     
+    addStyle(wb, sheet = i, NumberStyle, rows = 2:(nrow(res) + 1),
+             cols = number.col:ncol(res), gridExpand=T)
+    addStyle(wb, sheet = i, NumberStyle, rows = 2:(nrow(res) + 1),
+             cols = FCcols, gridExpand = T)
     addStyle(wb, sheet = i, NumberStyle, rows = 2:(nrow(res)+1),
-             cols = number.col : ncol(res),gridExpand=T)
-    addStyle(wb, sheet = i, NumberStyle, rows = 2:(nrow(res)+1),
-             cols = FCcols,gridExpand=T)
-    addStyle(wb, sheet = i, NumberStyle, rows = 2:(nrow(res)+1),
-             cols = meanCols,gridExpand=T)
-    addStyle(wb, sheet = i , NumberStyle_adj.pval, rows = 2:(nrow(res)+1), cols = adjPvalCols,gridExpand=T)
+             cols = meanCols, gridExpand=T)
+    addStyle(wb, sheet = i , NumberStyle_adj.pval, rows = 2:(nrow(res) + 1), cols = adjPvalCols, gridExpand = T)
     # Set Heights and Widths
     setRowHeights(wb, sheet = i, rows = 1, heights = 150)
-    setRowHeights(wb, sheet = i, rows = 2:(nrow(res)+1), heights = 14)
+    setRowHeights(wb, sheet = i, rows = 2:(nrow(res) + 1), heights = 14)
     
     setColWidths(wb, sheet = i, cols = (ncol(color.values)-1):ncol(res), widths = 8)
     setColWidths(wb, sheet = i, cols = 1:ncol(color.values), widths = 2)
@@ -399,15 +434,15 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     
     # Change some widths according to specific columns
     if ("AffyID" %in% colnames(res)){
-      number.col<-which(colnames(res) == "AffyID")
+      number.col <- which(colnames(res) == "AffyID")
       setColWidths(wb, sheet = i, cols = number.col, widths = 18)
     }
     if ("Symbol" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Symbol")
+      number.col <- which(colnames(res) == "Symbol")
       setColWidths(wb, sheet = i, cols = number.col, widths = 8)
     }
     if ("Geneid" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Geneid")
+      number.col <- which(colnames(res) == "Geneid")
       if (grepl("^ENS",res$Geneid[1])) { #if ensembl id make it bigger
         setColWidths(wb, sheet = i, cols = number.col, widths = 16)
       } else {
@@ -416,11 +451,11 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
       
     }
     if ("mrna" %in% colnames(res)){
-      number.col<-which(colnames(res) == "mrna")
+      number.col <- which(colnames(res) == "mrna")
       setColWidths(wb, sheet = i, cols = number.col, widths = 4)
     }
     if ("UCSC_symbols" %in% colnames(res)){
-      number.col<-which(colnames(res) == "UCSC_symbols")
+      number.col <- which(colnames(res) == "UCSC_symbols")
       setColWidths(wb, sheet = i, cols = number.col, widths = 8)
     }
     
@@ -430,45 +465,45 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
     }
     
     if ("GO.CC" %in% colnames(res)){
-      number.col<-which(colnames(res) == "GO.CC")
+      number.col <- which(colnames(res) == "GO.CC")
       setColWidths(wb, sheet = i, cols = number.col, widths = 12)
     }
     
     if ("GO.MF" %in% colnames(res)){
-      number.col<-which(colnames(res) == "GO.MF")
+      number.col <- which(colnames(res) == "GO.MF")
       setColWidths(wb, sheet = i, cols = number.col, widths = 12)
     }
     
     if ("^path" %in% colnames(res)){
-      number.col<-which(colnames(res) == "^path")
+      number.col <- which(colnames(res) == "^path")
       setColWidths(wb, sheet = i, cols = number.col, widths = 4)
     }
     if ("Description" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Description")
+      number.col <- which(colnames(res) == "Description")
       setColWidths(wb, sheet = i, cols = number.col, widths = 40)
     }
     if ("Length" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Length")
+      number.col <- which(colnames(res) == "Length")
       setColWidths(wb, sheet = i, cols = number.col, widths = 6)
     }
     if ("Strand" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Strand")
+      number.col <- which(colnames(res) == "Strand")
       setColWidths(wb, sheet = i, cols = number.col, widths = 3)
     }
     if ("Chr" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Chr")
+      number.col <- which(colnames(res) == "Chr")
       setColWidths(wb, sheet = i, cols = number.col, widths = 5)
     }
     if ("Chrom" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Chrom")
+      number.col <- which(colnames(res) == "Chrom")
       setColWidths(wb, sheet = i, cols = number.col, widths = 4)
     }
     if ("Start" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Start")
+      number.col <- which(colnames(res) == "Start")
       setColWidths(wb, sheet = i, cols = number.col, widths = 8)
     }
     if ("Stop" %in% colnames(res)){
-      number.col<-which(colnames(res) == "Stop")
+      number.col <- which(colnames(res) == "Stop")
       setColWidths(wb, sheet = i, cols = number.col, widths = 8)
     }
     # Heatmap :
@@ -483,17 +518,17 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
   }
   
   # COLOURING CONTRASTS: 
-  stats<-list()
+  stats <- list()
   #Vector of contrast columns colors
-  colors4stats <- c(c("#FFEA00", "#FFC000", "#00B0F0", "#92D050", "#FF6600", "#CCFF99","#CC99FF", "#FF5252", "#5C45FF", "#45FFC7","#fc79f4","#00B0F0", "#9458d1","#c2a03a", "#d1589b","#b3a7cc","#ccf1ff","#1fad66", "#ffeacc", "#f0a1a1" ),add.colors)
+  colors4stats <- c(c("#FFEA00", "#FFC000", "#00B0F0", "#92D050", "#FF6600", "#CCFF99","#CC99FF", "#FF5252", "#5C45FF", "#45FFC7","#fc79f4","#00B0F0", "#9458d1","#c2a03a", "#d1589b","#b3a7cc","#ccf1ff","#1fad66", "#ffeacc", "#f0a1a1" ), add.colors)
   #Only for sheets in contrasts
   for (i in 1:length(contrast)){
-    adjp=paste("adj.P.Val",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    p=paste("P.Value",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    fc=paste("FC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    logfc=paste("logFC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
+    adjp = paste("adj.P.Val", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    p = paste("P.Value", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    fc = paste("FC", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    logfc = paste("logFC", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
     # Select contrast columns
-    stats[[i]] <- which(colnames(res) %in% c(adjp,p,fc,logfc))
+    stats[[i]] <- which(colnames(res) %in% c(adjp, p, fc, logfc))
     # Colouring rows
     conditionalFormatting( wb,
                            sheet = i+1,
@@ -515,12 +550,12 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
   }
   # Only for sheet ALL DATA:
   for (i in 1:length(contrast)){
-    adjp=paste("adj.P.Val",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    p=paste("P.Value",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    fc=paste("FC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
-    logfc=paste("logFC",contrast[[i]][1],"vs",contrast[[i]][2],sep=".")
+    adjp = paste("adj.P.Val", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    p = paste("P.Value", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    fc = paste("FC", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
+    logfc = paste("logFC", contrast[[i]][1], "vs", contrast[[i]][2], sep=".")
     # Select contrast columns
-    stats[[i]] <- which(colnames(res) %in% c(adjp,p,fc,logfc))
+    stats[[i]] <- which(colnames(res) %in% c(adjp, p, fc, logfc))
     # Colouring rows
     conditionalFormatting( wb,
                            sheet = 1,
@@ -542,33 +577,49 @@ makeExcelResults <- function(pathRDS, fileRDS, contrast,
   }
   
   #### Legend: ####
-  message("Legend ...")
+  message("Adding legend ...")
   addWorksheet(wb, sheetName = "Legend")
-  a<-min(color.values)/5
-  b<-max(color.values)/5
+  a <- min(color.values)/5
+  b <- max(color.values)/5
   vector.min <- c(min(color.values),a*4,a*3,a*2,a)
   vector.max <- c(b,b*2,b*3,b*4, max(color.values))
   legend.df<-as.numeric(c(vector.min, 0 , vector.max))
   options("openxlsx.borderColour" = "black")
   options("openxlsx.borderStyle" = "thin")
-  writeData(wb,  "Legend" , legend.df, borderStyle = getOption("openxlsx.borderStyle", "thin")
-            ,startCol = 1,startRow = 1, borders = "columns")
+  writeData(wb,  "Legend" , legend.df, borderStyle = getOption("openxlsx.borderStyle", "thin"), startCol = 1, startRow = 1, borders = "columns")
   
   conditionalFormatting( wb,
                          sheet = "Legend",
                          cols = 1,
                          rows = 1:12,
-                         rule = as.numeric(c(min(color.values),0,max(color.values))),
+                         rule = as.numeric(c(min(color.values), 0, max(color.values))),
                          style = c("blue","white", "red"),
                          type = "colorScale"
   )
+  
+  #### Targets ####
+  if (!is.null(targets)) {
+    
+    message("Adding targets ...")
+    addWorksheet(wb, sheetName = "Targets")
+    writeData(
+      wb,
+      sheet = "Targets",
+      x = targets,
+      startCol = 1,
+      startRow = 1,
+      borders = "columns",
+      headerStyle = createStyle(textDecoration = "bold")
+    )
+    setColWidths(wb, "Targets", cols = 1:ncol(targets), widths = "auto")
+    
+  }
+  
+  
   message("Saving results ...")
-  saveWorkbook(wb, file.path(resultsDir,paste(fileName, "xlsx", sep=".")),overwrite = TRUE)
-  message("The function was performed successfully")
+  saveWorkbook(wb, file.path(resultsDir, paste(excelFilename, "xlsx", sep=".")), overwrite = TRUE)
+  message("The function was performed successfully!")
+  
 }
 
 
-
-# 09/02/2021: change pvalue of contrast = 1
-# change letter size
-# 10/02/2021: change widths of columns 

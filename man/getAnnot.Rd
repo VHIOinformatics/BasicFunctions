@@ -9,7 +9,7 @@ getAnnot(counts, genome, annotDir)
 \arguments{
 \item{counts}{Filtered count matrix.}
 
-\item{genome}{Genome that was used to create the count matrix. Example: "mm10", "GRCh38"....}
+\item{genome}{Genome that was used to create the count matrix. Example: "mm10", "GRCh38"...}
 
 \item{annotDir}{Directory where the annotation files are stored. The function will look for a subfolder with the genome name inside this directory.}
 }

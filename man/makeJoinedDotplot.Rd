@@ -10,7 +10,11 @@ makeJoinedDotplot(
   contrast.order,
   p.adj = 0.05,
   collectionName = "",
-  resultsDir = getwd()
+  resultsDir = getwd(),
+  sort_top = "signif",
+  wid = NULL,
+  hei = NULL,
+  excelFileName = "GSEA.Results_HeatmapNES"
 )
 }
 \arguments{
@@ -25,6 +29,14 @@ makeJoinedDotplot(
 \item{collectionName}{Name of the collection used for the GSEA, e.g. "H" for Hallmark. Default = ""}
 
 \item{resultsDir}{Output directory where results will be stored. Default = current working directory}
+
+\item{sort_top}{If there are more than 100 significantly enriched genesets, only top 30 will be used for the plot. This parameter specifies whether the top genesets will be selected according to significance ("signif") or enrichment score ("NES"). Default = "signif"}
+
+\item{wid}{Plot parameter: width of the device (in inches). If not specified, internal defaults will be used. Default = NULL}
+
+\item{hei}{Plot parameter: height of the device (in inches). If not specified, internal defaults will be used. Default = NULL}
+
+\item{excelFileName}{Name prefix to be used for the Excel heatmap file. Default = "GSEA.Results_HeatmapNES"}
 }
 \value{
 Saves a dotplot of GSEA significant results in all conditions, as well as an excel with the same information
